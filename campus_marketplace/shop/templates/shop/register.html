@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - CampusShop</title>
+  <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+</head>
+<body>
+  <header>
+    <h1>CampusShop</h1>
+    <nav>
+      <a href="{% url 'homepage' %}">Home</a>
+      <a href="{% url 'login' %}">Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Create an Account</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      {{ profile_form.as_p }}
+      <button type="submit" class="buy-btn">Register</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>© CampusShop</p>
+  </footer>
+</body>
+</html>
