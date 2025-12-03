@@ -3,30 +3,245 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Register - CampusShop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - TUP Marketplace</title>
   <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body>
-  <header>
-    <h1>CampusShop</h1>
-    <nav>
-      <a href="{% url 'homepage' %}">Home</a>
-      <a href="{% url 'login' %}">Login</a>
+  <!-- Header -->
+  <header class="bg-red-600 text-white shadow">
+    <!-- Top Bar -->
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <!-- Logo and Title (Left) -->
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
+          <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto"> 
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
+        </a>
+      </div>
+      
+      <!-- Hamburger Menu Button -->
+      <button id="menuBtn" class="lg:hidden flex-shrink-0 p-2 hover:bg-red-700 rounded-md transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+
+      <!-- Search Bar (Center) - Hidden on Mobile -->
+      <div class="hidden md:flex flex-1 max-w-2xl">
+        <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+          <input type="text" name="q" placeholder="Search products..."
+               class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
+          <button type="submit"
+              class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500 flex-shrink-0">
+            Go
+          </button>
+        </form>
+      </div>
+
+      <!-- Nav links (Right) - Hidden on Mobile -->
+      <nav class="hidden lg:flex gap-6 whitespace-nowrap flex-shrink-0">
+        <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
+        <a href="{% url 'product_list' %}" class="hover:text-gray-300">Products</a>
+        <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
+          <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
+          <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
+        {% endif %}
+      </nav>
+    </div>
+
+    <!-- Mobile Search Bar -->
+    <div class="md:hidden px-4 pb-3">
+      <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+        <input type="text" name="q" placeholder="Search products..."
+             class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
+        <button type="submit"
+            class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
+          Go
+        </button>
+      </form>
+    </div>
+
+    <!-- Mobile Menu -->
+    <nav id="mobileMenu" class="hidden md:hidden bg-red-700 border-t border-red-500">
+      <div class="max-w-7xl mx-auto px-4 py-2 space-y-1">
+        <a href="{% url 'homepage' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Home</a>
+        <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Products</a>
+        <a href="{% url 'cart' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Cart</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Profile</a>
+          <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Login</a>
+          <a href="{% url 'register' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Register</a>
+        {% endif %}
+      </div>
     </nav>
   </header>
 
-  <main>
-    <h2>Create an Account</h2>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      {{ profile_form.as_p }}
-      <button type="submit" class="buy-btn">Register</button>
-    </form>
+  <main class="bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-md">
+      <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2 text-center">Create Account</h1>
+        <p class="text-center text-gray-600 mb-6">Join TUP Marketplace today</p>
+        
+        <!-- Messages -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-800 border border-red-300{% else %}bg-green-100 text-green-800 border border-green-300{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        
+        <!-- Registration Form -->
+        <form method="post" novalidate>
+          {% csrf_token %}
+          
+          <!-- Username Field -->
+          <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+              <div class="text-red-600 text-sm mt-1">
+                {% for error in form.username.errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <p class="text-xs text-gray-500 mt-1">150 characters or fewer. Letters, digits and @/./+/-/_ only.</p>
+          </div>
+          
+          <!-- Email Field -->
+          <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="text-red-600 text-sm mt-1">
+                {% for error in form.email.errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Password Field -->
+          <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+              <div class="text-red-600 text-sm mt-1">
+                {% for error in form.password1.errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <p class="text-xs text-gray-500 mt-1">Your password must contain at least 8 characters and can't be entirely numeric.</p>
+          </div>
+          
+          <!-- Confirm Password Field -->
+          <div class="mb-6">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+              <div class="text-red-600 text-sm mt-1">
+                {% for error in form.password2.errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <p class="text-xs text-gray-500 mt-1">Enter the same password as before, for verification.</p>
+          </div>
+          
+          <!-- Submit Button -->
+          <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-md hover:bg-red-700 transition-colors mb-4">
+            Create Account
+          </button>
+        </form>
+        
+        <!-- Login Link -->
+        <p class="text-center text-gray-600">
+          Already have an account? 
+          <a href="{% url 'login' %}" class="text-red-600 font-bold hover:underline">Login here</a>
+        </p>
+      </div>
+    </div>
   </main>
 
-  <footer>
-    <p>© CampusShop</p>
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close menu when a link is clicked
+    const menuLinks = mobileMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+
+    // Add Tailwind styles to form inputs
+    document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(input => {
+      input.className = 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500';
+    });
+  </script>
+
+  <footer class="bg-red-700 text-gray-100 py-12 mt-12">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <!-- About -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">About Us</h3>
+          <p class="text-sm text-gray-200">TUP Marketplace is your go-to platform for buying and selling quality products on campus.</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Quick Links</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="{% url 'homepage' %}" class="text-gray-200 hover:text-yellow-300 transition">Home</a></li>
+            <li><a href="{% url 'product_list' %}" class="text-gray-200 hover:text-yellow-300 transition">Shop</a></li>
+            <li><a href="{% url 'cart' %}" class="text-gray-200 hover:text-yellow-300 transition">Cart</a></li>
+          </ul>
+        </div>
+
+        <!-- Customer Service -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Support</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Contact Us</a></li>
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">FAQ</a></li>
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Shipping Info</a></li>
+          </ul>
+        </div>
+
+        <!-- Follow Us -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Follow Us</h3>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Facebook</a>
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Twitter</a>
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Instagram</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t border-red-600 pt-8">
+        <p class="text-center text-gray-200 text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
+      </div>
+    </div>
   </footer>
 </body>
 </html>

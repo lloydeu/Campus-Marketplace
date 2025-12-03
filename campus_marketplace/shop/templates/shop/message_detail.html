@@ -1,0 +1,86 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ message.subject }} - TUP Marketplace</title>
+  <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <header class="bg-red-600 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80">
+          <img src="{% static 'shop/images/logo.png' %}" alt="Logo" class="h-20 w-auto">
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
+        </a>
+      </div>
+      <nav class="hidden lg:flex gap-6">
+        <a href="{% url 'messages_inbox' %}" class="hover:text-gray-300">Back to Messages</a>
+        <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Message Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 md:p-8 mb-6">
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ message.subject }}</h1>
+      
+      <div class="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-red-600 text-white rounded-full flex items-center justify-center text-lg">
+            👤
+          </div>
+          <div>
+            <p class="font-bold text-gray-900">{{ message.sender.username }}</p>
+            <p class="text-sm text-gray-600">{{ message.created_at|date:"M d, Y H:i" }}</p>
+          </div>
+        </div>
+        
+        {% if message.product %}
+          <a href="{% url 'product_detail' message.product.id %}" class="text-red-600 font-bold hover:underline">
+            View Product →
+          </a>
+        {% endif %}
+      </div>
+
+      <!-- Message Content -->
+      <div class="mb-8 p-4 bg-gray-50 rounded-lg">
+        <p class="text-gray-900 whitespace-pre-wrap">{{ message.message }}</p>
+      </div>
+
+      <!-- Product Info -->
+      {% if message.product %}
+        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-sm text-blue-800">
+            <strong>Product:</strong> {{ message.product.name }}<br>
+            <strong>Price:</strong> ₱{{ message.product.price }}
+          </p>
+        </div>
+      {% endif %}
+
+      <!-- Actions -->
+      <div class="flex gap-3">
+        <a href="{% url 'reply_message' message.id %}" class="flex-1 bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 text-center transition-colors">
+          💬 Reply
+        </a>
+        <a href="{% url 'delete_message' message.id %}" class="flex-1 bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 text-center transition-colors">
+          🗑️ Delete
+        </a>
+        <a href="{% url 'messages_inbox' %}" class="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 text-center">
+          ← Back
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-red-700 text-gray-100 py-8 mt-12">
+    <p class="text-center text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
+  </footer>
+</body>
+</html>

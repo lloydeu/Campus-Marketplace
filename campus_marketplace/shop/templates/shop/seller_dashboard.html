@@ -1,0 +1,203 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard - TUP Marketplace</title>
+  <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-red-600 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80">
+          <img src="{% static 'shop/images/logo.png' %}" alt="Logo" class="h-20 w-auto">
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
+        </a>
+      </div>
+      <nav class="hidden lg:flex gap-6">
+        <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
+        <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
+        <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-12">
+    <!-- Header -->
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Seller Dashboard</h1>
+      <p class="text-gray-600">Welcome back, {{ profile.shop_name }}!</p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="mb-6 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Navigation Tabs -->
+    <div class="mb-8 border-b border-gray-200">
+      <nav class="flex gap-8 overflow-x-auto">
+        <a href="{% url 'seller_dashboard' %}" class="pb-4 border-b-2 border-red-600 text-red-600 font-bold whitespace-nowrap">
+          📊 Dashboard
+        </a>
+        <a href="{% url 'seller_products' %}" class="pb-4 border-b-2 border-transparent text-gray-600 hover:text-gray-900 whitespace-nowrap">
+          📦 Products
+        </a>
+        <a href="{% url 'seller_orders' %}" class="pb-4 border-b-2 border-transparent text-gray-600 hover:text-gray-900 whitespace-nowrap">
+          📋 Orders
+        </a>
+        <a href="{% url 'seller_analytics' %}" class="pb-4 border-b-2 border-transparent text-gray-600 hover:text-gray-900 whitespace-nowrap">
+          📈 Analytics
+        </a>
+        <a href="{% url 'seller_profile_settings' %}" class="pb-4 border-b-2 border-transparent text-gray-600 hover:text-gray-900 whitespace-nowrap">
+          ⚙️ Settings
+        </a>
+      </nav>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <!-- Total Products -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-semibold">Total Products</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ total_products }}</p>
+          </div>
+          <div class="text-4xl">📦</div>
+        </div>
+      </div>
+
+      <!-- Total Sales -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-semibold">Total Sales</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ total_sales }}</p>
+          </div>
+          <div class="text-4xl">📊</div>
+        </div>
+      </div>
+
+      <!-- Revenue -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-semibold">Total Revenue</p>
+            <p class="text-3xl font-bold text-red-600 mt-2">₱{{ total_revenue }}</p>
+          </div>
+          <div class="text-4xl">💰</div>
+        </div>
+      </div>
+
+      <!-- Rating -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-semibold">Rating</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">⭐ {{ average_rating|floatformat:1 }}/5</p>
+          </div>
+          <div class="text-4xl">🌟</div>
+        </div>
+      </div>
+
+      <!-- Total Orders -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-semibold">Total Orders</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ orders.count }}</p>
+          </div>
+          <div class="text-4xl">🛍️</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Recent Orders -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Recent Orders</h2>
+          
+          {% if recent_orders %}
+            <div class="space-y-4">
+              {% for order in recent_orders %}
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                  <div>
+                    <p class="font-bold text-gray-900">Order #{{ order.id }}</p>
+                    <p class="text-sm text-gray-600">{{ order.placed_at|date:"M d, Y H:i" }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-bold text-red-600">₱{{ order.total }}</p>
+                    <span class="inline-block text-xs px-3 py-1 rounded-full font-semibold
+                      {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                      {% elif order.status == 'confirmed' %}bg-blue-100 text-blue-800
+                      {% elif order.status == 'shipped' %}bg-purple-100 text-purple-800
+                      {% elif order.status == 'delivered' %}bg-green-100 text-green-800
+                      {% else %}bg-red-100 text-red-800{% endif %}">
+                      {{ order.get_status_display }}
+                    </span>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            <a href="{% url 'seller_orders' %}" class="block text-center mt-6 text-red-600 font-bold hover:underline">
+              View All Orders →
+            </a>
+          {% else %}
+            <p class="text-center text-gray-600 py-8">No orders yet</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Quick Actions & Alerts -->
+      <div class="space-y-6">
+        <!-- Low Stock Alert -->
+        {% if low_stock_count > 0 %}
+          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+            <h3 class="font-bold text-yellow-900 mb-3">⚠️ Low Stock Alert</h3>
+            <p class="text-sm text-yellow-800 mb-4">{{ low_stock_count }} product(s) have low stock:</p>
+            <div class="space-y-2">
+              {% for product in low_stock_products %}
+                <a href="{% url 'edit_product' product.id %}" class="text-sm text-yellow-700 hover:underline block">
+                  • {{ product.name }} ({{ product.stock }} left)
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Quick Actions</h3>
+          <div class="space-y-3">
+            <a href="{% url 'add_listing' %}" class="block bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 text-center transition">
+              ➕ Add New Product
+            </a>
+            <a href="{% url 'seller_analytics' %}" class="block bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 text-center transition">
+              📊 View Analytics
+            </a>
+            <a href="{% url 'seller_profile_settings' %}" class="block bg-gray-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700 text-center transition">
+              ⚙️ Shop Settings
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-red-700 text-gray-100 py-8 mt-12">
+    <p class="text-center text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
+  </footer>
+</body>
+</html>

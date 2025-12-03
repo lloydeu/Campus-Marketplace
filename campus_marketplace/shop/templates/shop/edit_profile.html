@@ -1,0 +1,352 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile - TUP Marketplace</title>
+  <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <!-- Header (Same as other pages) -->
+  <header class="bg-red-600 text-white shadow">
+    <!-- Top Bar -->
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <!-- Logo and Title (Left) -->
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
+          <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto"> 
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
+        </a>
+      </div>
+      
+      <!-- Hamburger Menu Button -->
+      <button id="menuBtn" class="lg:hidden flex-shrink-0 p-2 hover:bg-red-700 rounded-md transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+
+      <!-- Search Bar (Center) - Hidden on Mobile -->
+      <div class="hidden md:flex flex-1 max-w-2xl">
+        <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+          <input type="text" name="q" placeholder="Search products..."
+               class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
+          <button type="submit"
+              class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500 flex-shrink-0">
+            Go
+          </button>
+        </form>
+      </div>
+
+      <!-- Nav links (Right) - Hidden on Mobile -->
+      <nav class="hidden lg:flex gap-6 whitespace-nowrap flex-shrink-0">
+        <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
+        <a href="{% url 'product_list' %}" class="hover:text-gray-300">Products</a>
+        <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
+          <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
+          <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
+        {% endif %}
+      </nav>
+    </div>
+
+    <!-- Mobile Search Bar -->
+    <div class="md:hidden px-4 pb-3">
+      <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+        <input type="text" name="q" placeholder="Search products..."
+             class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
+        <button type="submit"
+            class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
+          Go
+        </button>
+      </form>
+    </div>
+
+    <!-- Mobile Menu -->
+    <nav id="mobileMenu" class="hidden md:hidden bg-red-700 border-t border-red-500">
+      <div class="max-w-7xl mx-auto px-4 py-2 space-y-1">
+        <a href="{% url 'homepage' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Home</a>
+        <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Products</a>
+        <a href="{% url 'cart' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Cart</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Profile</a>
+          <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Login</a>
+          <a href="{% url 'register' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Register</a>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  <main class="bg-gray-50 py-8 md:py-12">
+    <div class="max-w-4xl mx-auto px-4">
+      
+      <!-- Page Title -->
+      <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Edit Profile</h1>
+        <p class="text-gray-600">Update your personal and contact information</p>
+      </div>
+
+      <!-- Messages -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="mb-6 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Edit Form -->
+      <form method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-6 md:p-8">
+        {% csrf_token %}
+
+        <!-- Avatar Section -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Profile Picture</h2>
+          <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+            <div>
+              {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="Current Avatar" class="h-24 w-24 rounded-full object-cover">
+              {% else %}
+                <div class="h-24 w-24 bg-red-600 text-white rounded-full flex items-center justify-center text-4xl">
+                  👤
+                </div>
+              {% endif %}
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Upload New Picture</label>
+              {{ profile_form.avatar }}
+              {% if profile_form.avatar.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ profile_form.avatar.errors }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- User Information -->
+        <div class="border-t border-gray-200 pt-8 mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Account Information</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <!-- First Name -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ user_form.first_name.label }}</label>
+              {{ user_form.first_name }}
+              {% if user_form.first_name.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ user_form.first_name.errors }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Last Name -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ user_form.last_name.label }}</label>
+              {{ user_form.last_name }}
+              {% if user_form.last_name.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ user_form.last_name.errors }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ user_form.email.label }}</label>
+              {{ user_form.email }}
+              {% if user_form.email.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ user_form.email.errors }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="border-t border-gray-200 pt-8 mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Personal Information</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <!-- Bio -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.bio.label }}</label>
+              {{ profile_form.bio }}
+              {% if profile_form.bio.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ profile_form.bio.errors }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Gender -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.gender.label }}</label>
+              {{ profile_form.gender }}
+              {% if profile_form.gender.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ profile_form.gender.errors }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Date of Birth -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.date_of_birth.label }}</label>
+              {{ profile_form.date_of_birth }}
+              {% if profile_form.date_of_birth.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ profile_form.date_of_birth.errors }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="border-t border-gray-200 pt-8 mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Contact Information</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <!-- Phone Number -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.phone_number.label }}</label>
+              {{ profile_form.phone_number }}
+              {% if profile_form.phone_number.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ profile_form.phone_number.errors }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Alternate Phone -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.alternate_phone.label }}</label>
+              {{ profile_form.alternate_phone }}
+              {% if profile_form.alternate_phone.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ profile_form.alternate_phone.errors }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Address Information -->
+        <div class="border-t border-gray-200 pt-8 mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Address Information</h2>
+          <div class="grid grid-cols-1 gap-4 md:gap-6">
+            <!-- Address -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.address.label }}</label>
+              {{ profile_form.address }}
+              {% if profile_form.address.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ profile_form.address.errors }}</p>
+              {% endif %}
+            </div>
+
+            <!-- City, Province, Postal -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.city.label }}</label>
+                {{ profile_form.city }}
+                {% if profile_form.city.errors %}
+                  <p class="text-red-600 text-sm mt-1">{{ profile_form.city.errors }}</p>
+                {% endif %}
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.province.label }}</label>
+                {{ profile_form.province }}
+                {% if profile_form.province.errors %}
+                  <p class="text-red-600 text-sm mt-1">{{ profile_form.province.errors }}</p>
+                {% endif %}
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.postal_code.label }}</label>
+                {{ profile_form.postal_code }}
+                {% if profile_form.postal_code.errors %}
+                  <p class="text-red-600 text-sm mt-1">{{ profile_form.postal_code.errors }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Country -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ profile_form.country.label }}</label>
+              {{ profile_form.country }}
+              {% if profile_form.country.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ profile_form.country.errors }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="border-t border-gray-200 pt-8 flex gap-4">
+          <button type="submit" class="flex-1 md:flex-none bg-red-600 text-white font-bold py-3 px-8 rounded-md hover:bg-red-700 transition-colors">
+            Save Changes
+          </button>
+          <a href="{% url 'profile' %}" class="flex-1 md:flex-none text-center bg-gray-600 text-white font-bold py-3 px-8 rounded-md hover:bg-gray-700 transition-colors">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close menu when a link is clicked
+    const menuLinks = mobileMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+  </script>
+
+  <footer class="bg-red-700 text-gray-100 py-12 mt-12">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <!-- About -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">About Us</h3>
+          <p class="text-sm text-gray-200">TUP Marketplace is your go-to platform for buying and selling quality products on campus.</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Quick Links</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="{% url 'homepage' %}" class="text-gray-200 hover:text-yellow-300 transition">Home</a></li>
+            <li><a href="{% url 'product_list' %}" class="text-gray-200 hover:text-yellow-300 transition">Shop</a></li>
+            <li><a href="{% url 'cart' %}" class="text-gray-200 hover:text-yellow-300 transition">Cart</a></li>
+          </ul>
+        </div>
+
+        <!-- Customer Service -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Support</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Contact Us</a></li>
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">FAQ</a></li>
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Shipping Info</a></li>
+          </ul>
+        </div>
+
+        <!-- Follow Us -->
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Follow Us</h3>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Facebook</a>
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Twitter</a>
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Instagram</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t border-red-600 pt-8">
+        <p class="text-center text-gray-200 text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

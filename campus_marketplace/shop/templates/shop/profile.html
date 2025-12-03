@@ -3,36 +3,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile - TUP Marketplace</title>
   <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
+  <!-- Header (Same as index.html) -->
   <header class="bg-red-600 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-6">
+    <!-- Top Bar -->
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       <!-- Logo and Title (Left) -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-shrink-0">
         <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
           <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto"> 
-          <h1 class="text-xl font-bold">TUP Marketplace</h1>
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
         </a>
       </div>
       
-      <!-- Search Bar (Center) -->
-      <div class="flex-1 max-w-2xl">
+      <!-- Hamburger Menu Button -->
+      <button id="menuBtn" class="lg:hidden flex-shrink-0 p-2 hover:bg-red-700 rounded-md transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+
+      <!-- Search Bar (Center) - Hidden on Mobile -->
+      <div class="hidden md:flex flex-1 max-w-2xl">
         <form action="{% url 'product_list' %}" method="get" class="flex w-full">
           <input type="text" name="q" placeholder="Search products..."
-                 class="flex-1 px-4 py-3 rounded-l-md text-black focus:outline-none">
+               class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
           <button type="submit"
-                  class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
+              class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500 flex-shrink-0">
             Go
           </button>
         </form>
       </div>
 
-      <!-- Nav links (Right) -->
-      <nav class="space-x-6 whitespace-nowrap">
+      <!-- Nav links (Right) - Hidden on Mobile -->
+      <nav class="hidden lg:flex gap-6 whitespace-nowrap flex-shrink-0">
         <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
         <a href="{% url 'product_list' %}" class="hover:text-gray-300">Products</a>
         <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
@@ -45,72 +55,187 @@
         {% endif %}
       </nav>
     </div>
+
+    <!-- Mobile Search Bar -->
+    <div class="md:hidden px-4 pb-3">
+      <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+        <input type="text" name="q" placeholder="Search products..."
+             class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
+        <button type="submit"
+            class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
+          Go
+        </button>
+      </form>
+    </div>
+
+    <!-- Mobile Menu -->
+    <nav id="mobileMenu" class="hidden md:hidden bg-red-700 border-t border-red-500">
+      <div class="max-w-7xl mx-auto px-4 py-2 space-y-1">
+        <a href="{% url 'homepage' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Home</a>
+        <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Products</a>
+        <a href="{% url 'cart' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Cart</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Profile</a>
+          <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Login</a>
+          <a href="{% url 'register' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Register</a>
+        {% endif %}
+      </div>
+    </nav>
   </header>
 
-  <main class="bg-gray-50 py-12">
+  <main class="bg-gray-50 py-8 md:py-12">
     <div class="max-w-7xl mx-auto px-4">
+      
       <!-- Profile Header -->
-      <div class="bg-white rounded-lg shadow-md p-8 mb-8">
-        <div class="flex items-center justify-between mb-6">
+      <div class="bg-white rounded-lg shadow-md p-4 md:p-8 mb-6 md:mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-0 mb-6">
           <div>
-            <h2 class="text-4xl font-bold text-gray-900">{{ request.user.username }}</h2>
-            <p class="text-gray-600 mt-2">Member since joining TUP Marketplace</p>
+            <h2 class="text-2xl md:text-4xl font-bold text-gray-900">{{ request.user.username }}</h2>
+            <p class="text-gray-600 text-sm md:text-base mt-2">Member since {{ request.user.date_joined|date:"M Y" }}</p>
           </div>
-          <div class="bg-red-600 text-white p-6 rounded-lg">
-            <div class="text-4xl font-bold">👤</div>
+          <div class="flex-shrink-0">
+            {% if profile.avatar %}
+              <img src="{{ profile.avatar.url }}" alt="Profile Avatar" class="h-20 md:h-24 w-20 md:w-24 rounded-full object-cover bg-red-600">
+            {% else %}
+              <div class="h-20 md:h-24 w-20 md:w-24 bg-red-600 text-white rounded-full flex items-center justify-center text-3xl md:text-4xl">
+                👤
+              </div>
+            {% endif %}
           </div>
         </div>
 
+        <!-- Add this in profile.html after the profile header -->
+
+{% if not profile.is_seller %}
+  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-bold text-yellow-900 mb-1">Want to Sell?</h3>
+        <p class="text-yellow-800">Start selling your products and earn money on TUP Marketplace</p>
+      </div>
+      <a href="{% url 'become_seller' %}" class="bg-red-600 text-white font-bold py-2 px-6 rounded-md hover:bg-red-700 transition whitespace-nowrap">
+        Become a Seller
+      </a>
+    </div>
+  </div>
+{% endif %}
+
+{% if profile.is_seller %}
+  <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-bold text-green-900 mb-1">✓ You're a Seller!</h3>
+        <p class="text-green-800">Shop: <strong>{{ profile.shop_name }}</strong></p>
+      </div>
+      <a href="{% url 'seller_dashboard' %}" class="bg-green-600 text-white font-bold py-2 px-6 rounded-md hover:bg-green-700 transition whitespace-nowrap">
+        View Dashboard
+      </a>
+    </div>
+  </div>
+{% endif %}
+
         <!-- Profile Info Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-gray-200 pt-6">
-          <div>
-            <h3 class="text-sm font-semibold text-gray-600 uppercase mb-1">Email</h3>
-            <p class="text-lg text-gray-900">{{ request.user.email }}</p>
-          </div>
-          <div>
-            <h3 class="text-sm font-semibold text-gray-600 uppercase mb-1">Phone</h3>
-            <p class="text-lg text-gray-900">{{ profile.phone_number|default:"Not provided" }}</p>
-          </div>
-          <div>
-            <h3 class="text-sm font-semibold text-gray-600 uppercase mb-1">Address</h3>
-            <p class="text-lg text-gray-900">{{ profile.address|default:"Not provided" }}</p>
-          </div>
-          <div>
-            <h3 class="text-sm font-semibold text-gray-600 uppercase mb-1">Seller Status</h3>
-            <p class="text-lg">
+        <div class="border-t border-gray-200 pt-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <!-- Email -->
+            <div>
+              <h3 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">Email</h3>
+              <p class="text-sm md:text-base text-gray-900 break-all">{{ request.user.email }}</p>
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <h3 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">Phone</h3>
+              <p class="text-sm md:text-base text-gray-900">{{ profile.phone_number|default:"Not provided" }}</p>
+            </div>
+
+            <!-- City -->
+            <div>
+              <h3 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">City</h3>
+              <p class="text-sm md:text-base text-gray-900">{{ profile.city|default:"Not provided" }}</p>
+            </div>
+
+            <!-- Province -->
+            <div>
+              <h3 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">Province</h3>
+              <p class="text-sm md:text-base text-gray-900">{{ profile.province|default:"Not provided" }}</p>
+            </div>
+
+            <!-- Country -->
+            <div>
+              <h3 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">Country</h3>
+              <p class="text-sm md:text-base text-gray-900">{{ profile.country|default:"Philippines" }}</p>
+            </div>
+
+            <!-- Seller Status -->
+            <div>
+              <h3 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">Seller Status</h3>
               {% if profile.is_seller %}
-                <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">✓ Seller</span>
+                <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs md:text-sm font-medium">✓ Seller</span>
               {% else %}
-                <span class="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full font-medium">Not a Seller</span>
+                <span class="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs md:text-sm font-medium">Not a Seller</span>
               {% endif %}
-            </p>
+            </div>
           </div>
         </div>
+
+        <!-- Seller Info (if seller) -->
+        {% if profile.is_seller %}
+        <div class="border-t border-gray-200 mt-6 pt-6">
+          <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-4">Shop Information</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div>
+              <h4 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">Shop Name</h4>
+              <p class="text-sm md:text-base text-gray-900">{{ profile.shop_name|default:"Not set" }}</p>
+            </div>
+            <div>
+              <h4 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">Rating</h4>
+              <p class="text-sm md:text-base text-gray-900">
+                ⭐ {{ profile.seller_rating|floatformat:1 }}/5.0
+              </p>
+            </div>
+            <div>
+              <h4 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-1">Total Sales</h4>
+              <p class="text-sm md:text-base text-gray-900">{{ profile.total_sales }} sales</p>
+            </div>
+          </div>
+          {% if profile.shop_description %}
+          <div class="mt-4">
+            <h4 class="text-xs md:text-sm font-semibold text-gray-600 uppercase mb-2">Shop Description</h4>
+            <p class="text-sm md:text-base text-gray-900">{{ profile.shop_description }}</p>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
       </div>
 
       <!-- Order History Section -->
-      <div class="bg-white rounded-lg shadow-md p-8">
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">Order History</h3>
+      <div class="bg-white rounded-lg shadow-md p-4 md:p-8">
+        <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-6">Order History</h3>
         
         {% if request.user.orders.all %}
           <div class="overflow-x-auto">
-            <table class="w-full">
+            <table class="w-full text-xs md:text-sm">
               <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Order ID</th>
-                  <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Total Amount</th>
-                  <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Date</th>
-                  <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
+                  <th class="px-3 md:px-6 py-3 text-left font-semibold text-gray-900">Order ID</th>
+                  <th class="px-3 md:px-6 py-3 text-left font-semibold text-gray-900">Total</th>
+                  <th class="px-3 md:px-6 py-3 text-left font-semibold text-gray-900">Date</th>
+                  <th class="px-3 md:px-6 py-3 text-left font-semibold text-gray-900">Status</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200">
                 {% for order in request.user.orders.all %}
                   <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4 text-sm font-medium text-red-600">#{{ order.id }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-900">₱{{ order.total }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-600">{{ order.placed_at|date:"M d, Y" }}</td>
-                    <td class="px-6 py-4 text-sm">
-                      <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">Completed</span>
+                    <td class="px-3 md:px-6 py-4 font-medium text-red-600">#{{ order.id }}</td>
+                    <td class="px-3 md:px-6 py-4 text-gray-900">₱{{ order.total }}</td>
+                    <td class="px-3 md:px-6 py-4 text-gray-600">{{ order.placed_at|date:"M d, Y" }}</td>
+                    <td class="px-3 md:px-6 py-4">
+                      <span class="inline-block text-xs md:text-sm px-2 md:px-3 py-1 rounded-full font-medium {% if order.status == 'delivered' %}bg-green-100 text-green-800{% elif order.status == 'shipped' %}bg-blue-100 text-blue-800{% elif order.status == 'confirmed' %}bg-yellow-100 text-yellow-800{% elif order.status == 'cancelled' %}bg-red-100 text-red-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ order.get_status_display|default:"Pending" }}
+                      </span>
                     </td>
                   </tr>
                 {% endfor %}
@@ -119,15 +244,40 @@
           </div>
         {% else %}
           <div class="text-center py-12">
-            <p class="text-gray-600 text-lg mb-4">No orders yet</p>
+            <p class="text-gray-600 text-base md:text-lg mb-4">No orders yet</p>
             <a href="{% url 'product_list' %}" class="inline-block bg-red-600 text-white font-bold py-2 px-6 rounded-md hover:bg-red-700 transition-colors">
               Start Shopping
             </a>
           </div>
         {% endif %}
       </div>
+
+      <!-- Edit Profile Button -->
+      <div class="mt-6 md:mt-8 text-center">
+        <a href="{% url 'edit_profile' %}" class="inline-block bg-red-600 text-white font-bold py-3 px-8 rounded-md hover:bg-red-700 transition-colors text-sm md:text-base">
+          Edit Profile
+        </a>
+      </div>
     </div>
   </main>
+
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close menu when a link is clicked
+    const menuLinks = mobileMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+  </script>
 
   <footer class="bg-red-700 text-gray-100 py-12 mt-12">
     <div class="max-w-7xl mx-auto px-4">

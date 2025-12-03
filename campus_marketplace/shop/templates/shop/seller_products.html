@@ -1,0 +1,96 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Products - Seller Dashboard</title>
+  <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <header class="bg-red-600 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80">
+          <img src="{% static 'shop/images/logo.png' %}" alt="Logo" class="h-20 w-auto">
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
+        </a>
+      </div>
+      <nav class="hidden lg:flex gap-6">
+        <a href="{% url 'seller_dashboard' %}" class="hover:text-gray-300">Dashboard</a>
+        <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
+        <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-4xl font-bold text-gray-900">My Products</h1>
+      <a href="{% url 'add_listing' %}" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700">
+        + Add Product
+      </a>
+    </div>
+
+    <!-- Search and Filter -->
+    <form method="get" class="mb-8 flex gap-4">
+      <input type="text" name="q" placeholder="Search products..." value="{{ search_query }}"
+             class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+      <select name="sort" class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+        <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest First</option>
+        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A-Z</option>
+        <option value="-price" {% if sort_by == '-price' %}selected{% endif %}>Price High-Low</option>
+        <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price Low-High</option>
+        <option value="stock" {% if sort_by == 'stock' %}selected{% endif %}>Stock Low-High</option>
+      </select>
+      <button type="submit" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700">
+        Search
+      </button>
+    </form>
+
+    <!-- Products Grid -->
+    {% if products %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for product in products %}
+          <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition">
+            <div class="h-40 bg-gray-200 rounded-lg mb-4 overflow-hidden">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
+              {% endif %}
+            </div>
+            <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">{{ product.name }}</h3>
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-red-600 font-bold">₱{{ product.price }}</p>
+              <p class="text-sm text-gray-600">Stock: {{ product.stock }}</p>
+            </div>
+            <div class="flex gap-2">
+              <a href="{% url 'edit_product' product.id %}" class="flex-1 text-center bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 text-sm">
+                Edit
+              </a>
+              <a href="{% url 'delete_product' product.id %}" class="flex-1 text-center bg-red-600 text-white py-2 rounded font-semibold hover:bg-red-700 text-sm">
+                Delete
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-12 bg-white rounded-lg">
+        <p class="text-gray-600 text-lg mb-4">No products found</p>
+        <a href="{% url 'add_listing' %}" class="inline-block bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700">
+          Add Your First Product
+        </a>
+      </div>
+    {% endif %}
+  </main>
+
+  <footer class="bg-red-700 text-gray-100 py-8 mt-12">
+    <p class="text-center text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
+  </footer>
+</body>
+</html>

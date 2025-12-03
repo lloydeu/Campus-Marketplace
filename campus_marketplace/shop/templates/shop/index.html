@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TUP Marketplace</title>
   <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -10,33 +11,53 @@
 
 <body>
   <header class="bg-red-600 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-6">
+    <!-- Top Bar -->
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       <!-- Logo and Title (Left) -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-shrink-0">
         <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
           <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto"> 
           <h1 class="text-xl font-bold">TUP Marketplace</h1>
         </a>
       </div>
       
-      <!-- Search Bar (Center) -->
-      <div class="flex-1 max-w-2xl">
+      <!-- Hamburger Menu Button -->
+      <button id="menuBtn" class="lg:hidden flex-shrink-0 p-2 hover:bg-red-700 rounded-md transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+
+      <!-- Search Bar (Center) - Hidden on Mobile -->
+      <div class="hidden md:flex flex-1 max-w-2xl">
         <form action="{% url 'product_list' %}" method="get" class="flex w-full">
           <input type="text" name="q" placeholder="Search products..."
-               class="flex-1 px-4 py-3 rounded-l-md text-black focus:outline-none">
+               class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
           <button type="submit"
-              class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
+              class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500 flex-shrink-0">
             Go
           </button>
         </form>
       </div>
 
-      <!-- Nav links (Right) -->
-      <nav class="space-x-6 whitespace-nowrap">
+      <!-- Nav links (Right) - Hidden on Mobile -->
+      <nav class="hidden lg:flex gap-6 whitespace-nowrap flex-shrink-0">
         <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
         <a href="{% url 'product_list' %}" class="hover:text-gray-300">Products</a>
         <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
         {% if user.is_authenticated %}
+        <a href="{% url 'messages_inbox' %}" class="hover:text-gray-300 flex items-center gap-2">
+          Messages
+          {% if user.is_authenticated %}
+            {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %}
+              {% if unread_count > 0 %}
+                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                  {{ unread_count }}
+                </span>
+              {% endif %}
+            {% endwith %}
+          {% endif %}
+        </a>
           <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
           <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
         {% else %}
@@ -45,6 +66,34 @@
         {% endif %}
       </nav>
     </div>
+
+    <!-- Mobile Search Bar -->
+    <div class="md:hidden px-4 pb-3">
+      <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+        <input type="text" name="q" placeholder="Search products..."
+             class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
+        <button type="submit"
+            class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
+          Go
+        </button>
+      </form>
+    </div>
+
+    <!-- Mobile Menu -->
+    <nav id="mobileMenu" class="hidden md:hidden bg-red-700 border-t border-red-500">
+      <div class="max-w-7xl mx-auto px-4 py-2 space-y-1">
+        <a href="{% url 'homepage' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Home</a>
+        <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Products</a>
+        <a href="{% url 'cart' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Cart</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Profile</a>
+          <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Login</a>
+          <a href="{% url 'register' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Register</a>
+        {% endif %}
+      </div>
+    </nav>
   </header>
 
   <main class="bg-gray-50">
@@ -58,8 +107,6 @@
       
       <!-- Dark Overlay -->
       <div class="absolute inset-0 bg-black bg-opacity-40 pointer-events-none"></div>
-      
-      <!-- Content -->
       
       <!-- Slideshow Navigation -->
       <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
@@ -84,16 +131,18 @@
     <!-- Categories Section -->
     <section class="bg-white py-12 border-t border-gray-200">
       <div class="max-w-7xl mx-auto px-4">
-        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Shop by Category</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-8 text-center">Shop by Category</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
           {% for category in categories %}
-            <a href="{% url 'product_list' %}?category={{ category.slug }}" class="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg p-6 text-center transition-all shadow-md hover:shadow-lg">
-              <div class="text-4xl mb-3">{{ category.icon }}</div>
-              <h3 class="text-lg font-bold">{{ category.name }}</h3>
-              {% if category.product_count %}
-                <p class="text-sm text-gray-100 mt-1">{{ category.product_count }} items</p>
+            <a href="{% url 'product_list' %}?category={{ category.slug }}" class="bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg p-3 sm:p-6 text-center transition-all shadow-md hover:shadow-lg">
+              <div class="text-3xl sm:text-4xl mb-2 sm:mb-3">{{ category.icon }}</div>
+              <h3 class="text-sm sm:text-lg font-bold">{{ category.name }}</h3>
+              {% if category.plural %}
+                <p class="text-xs sm:text-sm text-gray-100 mt-1">{{ category.length }} items</p>
+              {% elif category.length %}
+                <p class="text-xs sm:text-sm text-gray-100 mt-1">{{ category.length }} item</p>
               {% else %}
-                <p class="text-sm text-gray-100 mt-1">0 items</p>
+                <p class="text-xs sm:text-sm text-gray-100 mt-1">0 items</p>
               {% endif %}
             </a>
           {% empty %}
@@ -110,18 +159,39 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {% for p in latest %}
             <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-              <div class="relative h-48 bg-gray-200 overflow-hidden">
+              <!-- Product Image - Clickable -->
+              <a href="{% url 'product_detail' p.id %}" class="relative h-48 bg-gray-200 overflow-hidden block">
                 {% if p.image %}
                   <img src="{{ p.image.url }}" alt="{{ p.name }}" class="w-full h-full object-cover hover:scale-105 transition-transform">
                 {% else %}
                   <img src="{% static 'shop/images/placeholder.png' %}" alt="No image available" class="w-full h-full object-cover">
                 {% endif %}
-              </div>
+              </a>
+              
               <div class="p-4">
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ p.name }}</h3>
+                <!-- Product Title - Clickable -->
+                <a href="{% url 'product_detail' p.id %}" class="block hover:text-red-600 transition">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ p.name }}</h3>
+                </a>
+                
                 <p class="text-red-600 font-bold text-xl mb-2">₱{{ p.price }}</p>
                 <p class="text-sm text-gray-600 mb-4">Stock: <span class="font-medium">{{ p.stock }}</span></p>
-                <a href="{% url 'add_to_cart' p.id %}" class="w-full block text-center bg-red-600 text-white py-2 rounded-md font-medium hover:bg-red-700 transition-colors">Add to Cart</a>
+                
+                <!-- Buttons -->
+                <div class="flex gap-2">
+                  <!-- View Details Button -->
+                  <a href="{% url 'product_detail' p.id %}" class="flex-1 text-center bg-red-600 text-white py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                    View Details
+                  </a>
+                  
+                  <!-- Add to Cart Button -->
+                  <form method="post" action="{% url 'add_to_cart' p.id %}" class="flex-1">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full text-center bg-red-600 text-white py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                      Add to Cart
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           {% empty %}
@@ -133,6 +203,24 @@
   </main>
 
   <script src="{% static 'shop/js/slideshow.js' %}"></script>
+
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Close menu when a link is clicked
+    const menuLinks = mobileMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+  </script>
 
   <footer class="bg-red-700 text-gray-100 py-12 mt-12">
     <div class="max-w-7xl mx-auto px-4">
@@ -180,3 +268,5 @@
       </div>
     </div>
   </footer>
+</body>
+</html>

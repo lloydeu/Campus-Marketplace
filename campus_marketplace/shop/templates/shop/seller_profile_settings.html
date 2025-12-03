@@ -1,0 +1,181 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Settings - Seller Dashboard</title>
+  <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <header class="bg-red-600 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80">
+          <img src="{% static 'shop/images/logo.png' %}" alt="Logo" class="h-20 w-auto">
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
+        </a>
+      </div>
+      <nav class="hidden lg:flex gap-6">
+        <a href="{% url 'seller_dashboard' %}" class="hover:text-gray-300">Dashboard</a>
+        <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-12">
+    <h1 class="text-4xl font-bold text-gray-900 mb-8">Shop Settings</h1>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="mb-6 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-8">
+      {% csrf_token %}
+
+      <!-- Shop Name -->
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Shop Name *</label>
+        {{ form.shop_name }}
+        {% if form.shop_name.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.shop_name.errors }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Shop Description -->
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Shop Description *</label>
+        {{ form.shop_description }}
+        {% if form.shop_description.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.shop_description.errors }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Avatar -->
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Shop Avatar</label>
+        {% if profile.avatar %}
+          <div class="mb-4">
+            <img src="{{ profile.avatar.url }}" alt="Avatar" class="w-24 h-24 rounded-full object-cover">
+          </div>
+        {% endif %}
+        {{ form.avatar }}
+        {% if form.avatar.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.avatar.errors }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Contact Information -->
+      <div class="border-t border-gray-200 pt-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Contact Information</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+            {{ form.phone_number }}
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Alternate Phone</label>
+            {{ form.alternate_phone }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Address Information -->
+      <div class="border-t border-gray-200 pt-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Address</h2>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address</label>
+          {{ form.address }}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
+            {{ form.city }}
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Province</label>
+            {{ form.province }}
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code</label>
+            {{ form.postal_code }}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Country</label>
+          {{ form.country }}
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="border-t border-gray-200 pt-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Preferences</h2>
+        
+        <label class="flex items-center gap-3 mb-3">
+          {{ form.email_notifications }}
+          <span class="text-gray-700">Receive email notifications for orders</span>
+        </label>
+
+        <label class="flex items-center gap-3">
+          {{ form.newsletter_subscription }}
+          <span class="text-gray-700">Subscribe to marketplace newsletter</span>
+        </label>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-4">
+        <button type="submit" class="flex-1 bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition">
+          Save Settings
+        </button>
+        <a href="{% url 'seller_dashboard' %}" class="flex-1 text-center bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </main>
+
+  <footer class="bg-red-700 text-gray-100 py-8 mt-12">
+    <p class="text-center text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
+  </footer>
+
+  <style>
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      ring: 2px;
+      ring-color: #dc2626;
+      border-color: transparent;
+    }
+
+    input[type="checkbox"] {
+      w-4 h-4;
+      text-red-600 rounded focus:ring-2 focus:ring-red-500;
+    }
+  </style>
+</body>
+</html>

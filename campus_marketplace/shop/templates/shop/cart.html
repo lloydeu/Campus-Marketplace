@@ -1,73 +1,759 @@
 {% load static %}
-{% load cart_extras %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Cart - CampusShop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart - TUP Marketplace</title>
   <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body>
-  <header>
-    <h1>CampusShop</h1>
-    <nav>
-      <a href="{% url 'homepage' %}">Home</a>
-      <a href="{% url 'product_list' %}">Shop</a>
-      <a href="{% url 'profile' %}">Profile</a>
-      <a href="{% url 'logout' %}">Logout</a>
+  <!-- Header -->
+  <header class="bg-red-600 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
+          <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto"> 
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
+        </a>
+      </div>
+      
+      <button id="menuBtn" class="lg:hidden flex-shrink-0 p-2 hover:bg-red-700 rounded-md transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+
+      <div class="hidden md:flex flex-1 max-w-2xl">
+        <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+          <input type="text" name="q" placeholder="Search products..."
+               class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
+          <button type="submit"
+              class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500 flex-shrink-0">
+            Go
+          </button>
+        </form>
+      </div>
+
+      <nav class="hidden lg:flex gap-6 whitespace-nowrap flex-shrink-0">
+        <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
+        <a href="{% url 'product_list' %}" class="hover:text-gray-300">Products</a>
+        <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
+          <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
+          <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
+        {% endif %}
+      </nav>
+    </div>
+
+    <div class="md:hidden px-4 pb-3">
+      <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+        <input type="text" name="q" placeholder="Search products..."
+             class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
+        <button type="submit"
+            class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
+          Go
+        </button>
+      </form>
+    </div>
+
+    <nav id="mobileMenu" class="hidden md:hidden bg-red-700 border-t border-red-500">
+      <div class="max-w-7xl mx-auto px-4 py-2 space-y-1">
+        <a href="{% url 'homepage' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Home</a>
+        <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Products</a>
+        <a href="{% url 'cart' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Cart</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Profile</a>
+          <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Login</a>
+          <a href="{% url 'register' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Register</a>
+        {% endif %}
+      </div>
     </nav>
   </header>
 
-  <main>
-     {% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-      <div class="alert {{ message.tags }}">
-        {{ message }}
+  <main class="bg-gray-50 py-8 md:py-12">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
+        <p class="text-gray-600">Review and manage your cart items</p>
       </div>
-    {% endfor %}
-  </div>
-{% endif %}
 
-    <h2>Your Cart</h2>
-    {% if cart_items %}
-      <table class="cart-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in cart_items %}
-            <tr>
-              <td>{{ item.product.name }}</td>
-              <td>{{ item.quantity }}</td>
-              <td>₱{{ item.product.price }}</td>
-              <td>₱{{ item.quantity|multiply:item.product.price }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="mb-6 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
 
-      <div class="cart-summary">
-        <p><strong>Total:</strong> ₱{{ cart_total }}</p>
-        <a href="{% url 'checkout' %}" class="buy-btn">Proceed to Checkout</a>
-        <a href="{% url 'homepage' %}" class="secondary-btn">Continue Shopping</a>
-      </div>
-    {% else %}
-      <p>Your cart is empty.</p>
-    {% endif %}
+      {% if user.is_authenticated %}
+        {% if cart_items %}
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            <!-- Cart Items Section -->
+            <div class="lg:col-span-2">
+              <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="px-4 md:px-6 py-4 border-b border-gray-200 bg-gray-50">
+                  <h2 class="text-lg md:text-xl font-bold text-gray-900">
+                    Items in Cart <span class="text-red-600">({{ cart_items.count }})</span>
+                  </h2>
+                </div>
 
-   
+                <div class="divide-y divide-gray-200">
+                  {% for item in cart_items %}
+                    <div class="p-4 md:p-6 hover:bg-gray-50 transition">
+                      <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="w-full sm:w-24 h-24 flex-shrink-0 bg-gray-200 rounded-lg overflow-hidden">
+                          {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+                          {% else %}
+                            <img src="{% static 'shop/images/placeholder.png' %}" alt="No image" class="w-full h-full object-cover">
+                          {% endif %}
+                        </div>
 
+                        <div class="flex-1 min-w-0">
+                          <h3 class="text-base md:text-lg font-semibold text-gray-900 mb-1 truncate">
+                            <a href="{% url 'product_detail' item.product.id %}" class="hover:text-red-600">
+                              {{ item.product.name }}
+                            </a>
+                          </h3>
+                          <p class="text-sm text-gray-600 mb-2">Seller: {{ item.product.seller.username }}</p>
+                          <p class="text-sm md:text-base font-bold text-red-600 mb-3">₱{{ item.product.price }}</p>
+
+                          <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-600">Qty:</span>
+                            <form method="post" action="{% url 'update_cart' item.id %}" class="flex items-center gap-2">
+                              {% csrf_token %}
+                             
+                              <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="w-12 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-red-500" 
+                              data-item-id="{{ item.id }}"
+          onclick="updateQuantity(this, 'increase')">
+                             
+                            </form>
+                          </div>
+                        </div>
+
+                        <div class="flex flex-col items-end justify-between">
+                          <div>
+                            <p class="text-sm text-gray-600 mb-1">Subtotal</p>
+                            <p class="text-lg md:text-xl font-bold text-gray-900">₱{{ item.line_total }}</p>
+                          </div>
+                          
+                          <form method="post" action="{% url 'remove_from_cart' item.id %}" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-600 hover:text-red-800 font-medium text-sm transition">
+                              Remove
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+
+                      {% if item.product.stock <= 5 and item.product.stock > 0 %}
+                        <p class="text-xs text-orange-600 mt-2">⚠️ Only {{ item.product.stock }} left in stock</p>
+                      {% elif item.product.stock == 0 %}
+                        <p class="text-xs text-red-600 mt-2">❌ Out of stock</p>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <!-- Shipping Address Section -->
+              <div class="bg-white rounded-lg shadow-md p-4 md:p-6 mb-6">
+                <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  📍 Shipping Address
+                </h2>
+
+                <div class="mb-6 pb-6 border-b border-gray-200">
+
+
+
+                  <div class="space-y-2">
+
+                    {% for address in user_addresses %}
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="shipping_address" value="{{ address.address }}" checked class="w-4 h-4 text-red-600" onchange="updateAddress()">
+                      <div class="ml-3 flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-900">Saved Address</p>
+                        <p class="text-xs text-gray-600">{{address}}</p>
+                        
+                      </div>
+                      <div class="ml-4 text-xs text-gray-500">
+        
+                      <form method="post" action="{% url 'delete_address' address.address_id %}" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-600 hover:text-red-800 font-medium text-sm transition">
+                              Remove
+                            </button>
+                          </form> </div>
+                    </label>
+                    
+                    {% endfor %}
+                    
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="shipping_address" value="custom" class="w-4 h-4 text-red-600" onchange="updateAddress()" 
+                      {% if user_addresses.count == 0 %} checked {% endif %}>
+                      <div class="ml-3 flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-900">Custom Shipping Address</p>
+                        <p class="text-xs text-gray-600">Enter a new shipping address</p>
+                      </div>
+                    </label>
+                    
+                    <div class="p-4 border border-gray-300 rounded-lg bg-gray-50">
+                      
+                <form id="addressForm" class="space-y-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     
+                    <div>
+                      
+                
+        
+                      <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                      <input type="text" name="full_name" value="{{ user.get_full_name }}" id="full_name"
+                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                      <input type="tel" name="phone" value="{{ user.profile.phone_number }}" placeholder="+63 9XX XXX XXXX" id="phone"
+                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                    </div>
+
+                    <div class="md:col-span-2">
+                      <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address *</label>
+                      <input type="text" name="address" value="{{ user.profile.address }}" id="address"
+                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
+                      <input type="text" name="city" value="{{ user.profile.city }}" id="city"  
+                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-700 mb-2">Province *</label>
+                      <input type="text" name="province" value="{{ user.profile.province }}" id="province"
+                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                    </div>
+
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code *</label>
+                      <input type="text" name="postal_code" value="{{ user.profile.postal_code }}" id="postal_code"
+                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                    </div>
+                    <div class="md:col-span-2 flex justify-end">
+                    <button type="button" id="save_address_button" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 transition" onclick="saveShippingAddress()">
+                    Save Address
+                  </button>
+                  </div>
+                  </div>
+                   
+                </form>
+                  </div>
+
+                  </div>
+                </div>
+
+                 
+                
+                
+              </div>
+
+              <div class="mt-4 lg:hidden">
+                <a href="{% url 'product_list' %}" class="block text-center bg-gray-600 text-white font-bold py-3 rounded-md hover:bg-gray-700 transition">
+                  Continue Shopping
+                </a>
+              </div>
+            </div>
+
+            <!-- Order Summary & Checkout Section -->
+            <div class="lg:col-span-1">
+              <div class="bg-white rounded-lg shadow-md p-4 md:p-6 sticky top-4">
+                <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+
+                <div class="space-y-3 mb-6 pb-6 border-b border-gray-200">
+                  <div class="flex justify-between text-gray-600">
+                    <span>Subtotal</span>
+                    <span>₱<span id="subtotal">{{ cart_subtotal }}</span></span>
+                  </div>
+                  <div class="flex justify-between text-gray-600">
+                    <span>Shipping</span>
+                    <span id="shipping-cost">₱0.00</span>
+                  </div>
+                  <div class="flex justify-between text-gray-600">
+                    <span>Processing Fee (5%)</span>
+                    <span>₱<span id="tax">{{ tax }}</span></span>
+                  </div>
+                </div>
+
+                <div class="mb-6">
+                  <div class="flex justify-between items-center">
+                    <span class="text-lg font-bold text-gray-900">Total</span>
+                    <span class="text-2xl font-bold text-red-600">₱<span id="total">{{ cart_total }}</span></span>
+                  </div>
+                </div>
+
+                <!-- Shipping Method -->
+                <div class="mb-6 pb-6 border-b border-gray-200">
+                  <h3 class="font-bold text-gray-900 mb-3 text-sm">Shipping Method</h3>
+                  <div class="space-y-2">
+
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="shipping" value="lalamove" class="w-4 h-4 text-red-600" onchange="updateShipping()">
+                      <div class="ml-3 flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-900">Lalamove Delivery</p>
+                        <p class="text-xs text-gray-600" id="lalamove-desc">Get Quote</p>
+                      </div>
+                      <button type="button" id="getQuoteBtn" class="ml-2 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition" onclick="getLalamoveQuote()" style="display:none;">
+                        Get Quote
+                      </button>
+                    </label>
+
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="shipping" value="pickup" class="w-4 h-4 text-red-600" onchange="updateShipping()" checked>
+                      <div class="ml-3 flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-900">Pick-up</p>
+                        <p class="text-xs text-gray-600">Free</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="mb-6">
+                  <h3 class="font-bold text-gray-900 mb-3 text-sm">Payment Method</h3>
+                  <div class="space-y-2">
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="payment" value="cod" checked class="w-4 h-4 text-red-600">
+                      <div class="ml-3">
+                        <p class="text-sm font-semibold text-gray-900">Cash on Pick-up/Delivery</p>
+                        <p class="text-xs text-gray-600">Pay when you receive</p>
+                      </div>
+                    </label>
+
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="payment" value="card" class="w-4 h-4 text-red-600">
+                      <div class="ml-3">
+                        <p class="text-sm font-semibold text-gray-900">Credit/Debit Card</p>
+                        <p class="text-xs text-gray-600">Visa, Mastercard, Amex</p>
+                      </div>
+                    </label>
+
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="payment" value="gcash" class="w-4 h-4 text-red-600">
+                      <div class="ml-3">
+                        <p class="text-sm font-semibold text-gray-900">GCash</p>
+                        <p class="text-xs text-gray-600">Filipino mobile payment</p>
+                      </div>
+                    </label>
+
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="payment" value="bank_transfer" class="w-4 h-4 text-red-600">
+                      <div class="ml-3">
+                        <p class="text-sm font-semibold text-gray-900">Bank Transfer</p>
+                        <p class="text-xs text-gray-600">Direct bank payment</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Checkout Button -->
+                <form method="post" action="{% url 'checkout' %}" class="mb-3">
+                  {% csrf_token %}
+                  <input type="hidden" name="shipping" id="shipping_method" value="standard">
+                  <input type="hidden" name="payment" id="payment_method" value="cod">
+                  <input type="hidden" name="lalamove_quote_id" id="lalamove_quote_id" value="">
+                  <button type="submit" id="checkout_button" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors">
+                    Place Order
+                  </button>
+                </form>
+
+                <a href="{% url 'product_list' %}" class="block text-center bg-gray-200 text-gray-900 font-bold py-3 rounded-md hover:bg-gray-300 transition">
+                  Continue Shopping
+                </a>
+
+                <p class="text-xs text-gray-500 text-center mt-4">
+                  🔒 Secure checkout powered by encryption
+                </p>
+              </div>
+            </div>
+          </div>
+
+        {% else %}
+          <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <div class="inline-block bg-gray-100 rounded-full p-6 mb-4">
+              <svg class="w-16 h-16 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+            <p class="text-gray-600 mb-6">Looks like you haven't added any products yet. Start exploring!</p>
+            <a href="{% url 'product_list' %}" class="inline-block bg-red-600 text-white font-bold py-3 px-8 rounded-md hover:bg-red-700 transition-colors">
+              Start Shopping
+            </a>
+          </div>
+        {% endif %}
+
+      {% else %}
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+          <div class="inline-block bg-red-100 rounded-full p-6 mb-4">
+            <svg class="w-16 h-16 text-red-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Login Required</h2>
+          <p class="text-gray-600 mb-6">You need to login to access your shopping cart. Create an account or login to continue shopping.</p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="{% url 'login' %}" class="inline-block bg-red-600 text-white font-bold py-3 px-8 rounded-md hover:bg-red-700 transition-colors">
+              Login
+            </a>
+            <a href="{% url 'register' %}" class="inline-block bg-gray-600 text-white font-bold py-3 px-8 rounded-md hover:bg-gray-700 transition-colors">
+              Register
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
   </main>
 
-  <footer>
-    <p>© CampusShop</p>
+  {{ clean_addresses | json_script:"user-addresses-data" }}
+
+  <script>
+    // Mobile Menu Toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    // Shipping Address Inputs
+    const saveAddressButton = document.getElementById('save_address_button');
+    const fullNameInput = document.getElementById('full_name');
+    const phoneInput = document.getElementById('phone'); 
+    const addressInput = document.getElementById('address');
+    const cityInput = document.getElementById('city');  
+    const provinceInput = document.getElementById('province');
+    const postalCodeInput = document.getElementById('postal_code');
+    const initselectedShipping = document.querySelector('input[name="shipping"]:checked').value;
+    
+    // Order Summary Elements
+    const totalDisplay = document.getElementById('total');
+    const paymentMethod = document.getElementById('payment_method');
+    const quoteBtn = document.getElementById('getQuoteBtn');
+    const checkoutBtn = document.getElementById('checkout_button'); 
+    const shippingCostDisplay = document.getElementById('shipping-cost'); 
+    const lalamoveText = document.getElementById('lalamove-desc');
+
+    // Event Listeners
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('input[name="payment"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        paymentMethod.value = this.value;
+      });
+    });
+
+    const menuLinks = mobileMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+
+
+    // On page load, check if Lalamove is selected
+    if (initselectedShipping === 'lalamove') {
+        quoteBtn.style.display = 'inline-block';
+        shippingCostDisplay.textContent = '₱TBD';
+        lalamoveText.textContent = 'Click button to get quote';
+        totalDisplay.textContent = 'TBD';
+        checkoutBtn.disabled = true;
+        checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        totalDisplay.textContent = {{ cart_total }}
+      }
+
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    
+    function saveShippingAddress() {
+      const csrftoken = getCookie('csrftoken');
+      const addressData = {
+        full_name: fullNameInput.value,
+        phone_number: phoneInput.value,
+        address: addressInput.value,
+        city: cityInput.value,
+        province: provinceInput.value,
+        postal_code: postalCodeInput.value
+      };
+
+      fetch('/api/save-shipping-address/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(addressData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Shipping address saved successfully.');
+        } else {
+          alert('Error saving address: ' + (data.error || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Network error:', error);
+        alert('A network error occurred while saving the address.');
+      });
+    }
+
+    function updateAddress() {
+    // 1. Get the data array from the JSON script tag
+    const addressesJsonElement = document.getElementById('user-addresses-data');
+    console.log(addressesJsonElement.textContent);
+    const userAddresses = JSON.parse(addressesJsonElement.textContent);
+    
+    // 2. Get the value of the currently selected radio button
+    let selectedAddressValue = document.querySelector('input[name="shipping_address"]:checked').value;
+    
+    // Define a field to hold the matched address object
+    let matchedAddress = null;
+
+    if (selectedAddressValue === 'custom') {
+        // Logic for custom address (This block is fine, but you should also enable fields)
+        addressInput.disabled = false;
+        cityInput.disabled = false;
+        provinceInput.disabled = false;
+        postalCodeInput.disabled = false;
+        fullNameInput.disabled = false;
+        phoneInput.disabled = false;
+        
+        // Clear all fields for new input
+        fullNameInput.value = '';
+        phoneInput.value = '';
+        addressInput.value = '';
+        cityInput.value = '';
+        provinceInput.value = '';
+        postalCodeInput.value = '';
+
+    } else {
+        
+        // --- MATCHING FIX ---
+        // Normalize the value from the radio button for a robust match
+        const normalizedSelectedAddress = selectedAddressValue.trim().toLowerCase();
+        
+        // 3. Find the address object that matches the value
+        matchedAddress = userAddresses.find(addr => {
+            // Check if the 'address' key exists and normalize its value
+            const addressToCompare = (addr.address || '').trim().toLowerCase();
+            return addressToCompare === normalizedSelectedAddress;
+        });
+
+        if (matchedAddress) {
+            // Disable fields first
+            addressInput.disabled = true;
+            cityInput.disabled = true;
+            provinceInput.disabled = true;
+            postalCodeInput.disabled = true;
+            fullNameInput.disabled = true;
+            phoneInput.disabled = true;
+
+            // Populate fields with matched address data
+            // NOTE: Ensure these keys (address, city, etc.) exist in the object passed from Django
+            addressInput.value = matchedAddress.address || '';
+            cityInput.value = matchedAddress.city || '';
+            provinceInput.value = matchedAddress.province || '';
+            postalCodeInput.value = matchedAddress.postal_code || '';
+            fullNameInput.value = matchedAddress.full_name || '';
+            phoneInput.value = matchedAddress.phone_number || '';
+            
+        } else {
+            // This error indicates a failure in the radio button value vs. the JSON data structure
+            console.error("Match Failure: Check if the radio button value exactly matches the address field in your clean_addresses data.");
+        }
+    }
+}
+
+    function updateShipping() {
+      const selectedShipping = document.querySelector('input[name="shipping"]:checked').value;
+      const shippingCostEl = shippingCostDisplay;
+      const getQuoteBtn = quoteBtn;
+
+      if (selectedShipping === 'lalamove') {
+        getQuoteBtn.style.display = 'inline-block';
+        shippingCostEl.textContent = '₱TBD';
+        lalamoveText.textContent = 'Click button to get quote';
+        totalDisplay.textContent = 'TBD';
+        getQuoteBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+        getQuoteBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+        getQuoteBtn.textContent = 'Get Quote';
+        getQuoteBtn.disabled = false;  
+       checkoutBtn.disabled = true;
+       checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      } else if (selectedShipping === 'pickup') {
+        
+        getQuoteBtn.style.display = 'none';
+        shippingCostEl.textContent = '₱0.00';
+        totalDisplay.textContent = 'TBD';
+        totalDisplay.textContent = {{ cart_total }}
+       checkoutBtn.disabled = false;
+        try{
+       checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } catch (error) {
+          console.error('Error removing classes from checkout button:', error);
+        }
+      }
+      
+      document.getElementById('shipping_method').value = selectedShipping;
+    }
+
+    function getLalamoveQuote() {
+      const addressForm = document.getElementById('addressForm');
+      const formData = new FormData(addressForm);
+      const selectedAddress = document.querySelector('input[name="shipping_address"]:checked').value;
+      let address = '';
+
+      if (selectedAddress === 'custom') {
+        address = `${formData.get('address')}, ${formData.get('city')}, ${formData.get('province')}, Philippines`;
+      } else {
+        address = addressInput.value + ', ' +
+                  cityInput.value + ', ' +
+                  provinceInput.value + ', Philippines';
+      }
+
+      const deliveryAddress = address
+      const orderData = {
+        "data": {
+          "scheduleAt": new Date(Date.now() + 3600000).toISOString(),
+          "serviceType": "MOTORCYCLE",
+          "language": "en_PH",
+          "stops": [
+            {
+              "address": "Natividad Almeda-Lopez corner A. Villegas and San Marcelino Streets, Ermita, Manila, Metro Manila, Philippines"
+            },
+            {
+              "address": deliveryAddress
+            }
+          ],
+          "item": {
+            "quantity": "1",
+            "weight": "SMALL"
+          }
+        }
+      };
+
+      const csrftoken = getCookie('csrftoken');
+      const getQuoteBtn = quoteBtn;
+      totalDisplay.textContent = {{ cart_total }}
+      getQuoteBtn.disabled = true;
+      getQuoteBtn.textContent = 'Getting Quote...';
+
+      fetch('/api/get-shipping-quote/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(orderData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const shippingCost = data.fee;
+          totalDisplay.textContent = parseFloat({{ cart_total }} + parseFloat(shippingCost)).toFixed(2);
+          shippingCostDisplay.textContent = `₱${parseFloat(shippingCost).toFixed(2)}`;
+          lalamoveText.textContent = `₱${parseFloat(shippingCost).toFixed(2)}`;
+          document.getElementById('lalamove_quote_id').value = data.quoteId;
+          getQuoteBtn.textContent = 'Quote Received ✓';
+          getQuoteBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+          getQuoteBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+         checkoutBtn.disabled = false;
+          try{
+         checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          } catch (error) {
+            console.error('Error removing classes from checkout button:', error);
+          }
+        
+        } else {
+          alert('Error getting quote: ' + (data.error || 'Unknown error'));
+          getQuoteBtn.disabled = false;
+          getQuoteBtn.textContent = 'Get Quote';
+        }
+      })
+      .catch(error => {
+        console.error('Network error:', error);
+        alert('A network error occurred while fetching the quote.');
+        getQuoteBtn.disabled = false;
+        getQuoteBtn.textContent = 'Get Quote';
+      });
+    }
+
+    updateAddress();
+  </script>
+
+  <footer class="bg-red-700 text-gray-100 py-12 mt-12">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">About Us</h3>
+          <p class="text-sm text-gray-200">TUP Marketplace is your go-to platform for buying and selling quality products on campus.</p>
+        </div>
+
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Quick Links</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="{% url 'homepage' %}" class="text-gray-200 hover:text-yellow-300 transition">Home</a></li>
+            <li><a href="{% url 'product_list' %}" class="text-gray-200 hover:text-yellow-300 transition">Shop</a></li>
+            <li><a href="{% url 'cart' %}" class="text-gray-200 hover:text-yellow-300 transition">Cart</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Support</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Contact Us</a></li>
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">FAQ</a></li>
+            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Shipping Info</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-white font-bold text-lg mb-4">Follow Us</h3>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Facebook</a>
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Twitter</a>
+            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Instagram</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-red-600 pt-8">
+        <p class="text-center text-gray-200 text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
+      </div>
+    </div>
   </footer>
 </body>
 </html>

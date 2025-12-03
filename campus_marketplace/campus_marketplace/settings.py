@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -137,3 +138,24 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Email Configuration (using Gmail)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'eubertlloyd5@gmail.com'
+EMAIL_HOST_PASSWORD = 'dpyx swyb ymlu njsj '  # Use app password for Gmail
+DEFAULT_FROM_EMAIL = 'eubertlloyd5@gmail.com'
+
+
+
+load_dotenv() 
+
+LALAMOVE_API_KEY = os.getenv("LALAMOVE_API_KEY")
+LALAMOVE_API_SECRET = os.getenv("LALAMOVE_API_SECRET")
+LALAMOVE_MARKET = os.getenv("LALAMOVE_MARKET")
+LALAMOVE_BASE_URL = os.getenv("LALAMOVE_BASE_URL")
+XENDIT_API_SECRET = os.getenv("XENDIT_API_SECRET")
+XENDIT_API_KEY = os.getenv("XENDIT_API_KEY")   
+XENDIT_BASE_URL = os.getenv("XENDIT_BASE_URL")

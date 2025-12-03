@@ -1,0 +1,111 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - Seller Dashboard</title>
+  <link rel="stylesheet" href="{% static 'shop/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <header class="bg-red-600 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80">
+          <img src="{% static 'shop/images/logo.png' %}" alt="Logo" class="h-20 w-auto">
+          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
+        </a>
+      </div>
+      <nav class="hidden lg:flex gap-6">
+        <a href="{% url 'seller_dashboard' %}" class="hover:text-gray-300">Dashboard</a>
+        <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
+        <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-4xl font-bold text-gray-900">Analytics</h1>
+      <form method="get" class="flex gap-2">
+        <select name="period" class="px-4 py-2 border border-gray-300 rounded-lg">
+          <option value="7" {% if time_period == '7' %}selected{% endif %}>Last 7 days</option>
+          <option value="30" {% if time_period == '30' %}selected{% endif %}>Last 30 days</option>
+          <option value="90" {% if time_period == '90' %}selected{% endif %}>Last 90 days</option>
+        </select>
+        <button type="submit" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-700">
+          Filter
+        </button>
+      </form>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <p class="text-gray-600 text-sm font-semibold mb-2">Total Orders</p>
+        <p class="text-4xl font-bold text-gray-900">{{ total_orders }}</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <p class="text-gray-600 text-sm font-semibold mb-2">Total Revenue</p>
+        <p class="text-4xl font-bold text-red-600">₱{{ total_revenue }}</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <p class="text-gray-600 text-sm font-semibold mb-2">Orders Shipped</p>
+        <p class="text-4xl font-bold text-blue-600">{{ shipped_orders }}</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <p class="text-gray-600 text-sm font-semibold mb-2">Orders Delivered</p>
+        <p class="text-4xl font-bold text-green-600">{{ delivered_orders }}</p>
+      </div>
+    </div>
+
+    <!-- Order Status Breakdown -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Order Status</h2>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Pending</span>
+            <span class="font-bold text-yellow-600">{{ pending_orders }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Shipped</span>
+            <span class="font-bold text-blue-600">{{ shipped_orders }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Delivered</span>
+            <span class="font-bold text-green-600">{{ delivered_orders }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Products -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Top Products</h2>
+        {% if top_products %}
+          <div class="space-y-4">
+            {% for item in top_products %}
+              <div class="flex items-center justify-between pb-4 border-b border-gray-200 last:border-0">
+                <div>
+                  <p class="font-semibold text-gray-900">{{ item.product__name }}</p>
+                  <p class="text-sm text-gray-600">{{ item.total_sold }} sold</p>
+                </div>
+                <p class="font-bold text-red-600">₱{{ item.revenue }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-gray-600">No data available</p>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-red-700 text-gray-100 py-8 mt-12">
+    <p class="text-center text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
+  </footer>
+</body>
+</html>
