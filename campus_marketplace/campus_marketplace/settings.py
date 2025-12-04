@@ -27,9 +27,18 @@ SECRET_KEY = 'django-insecure-!3v@d3dj&g7!o0ysrrk*ij@%5tt55r^ls33w-31yh=^-ce)37+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'superlaboriously-teeniest-lizette.ngrok-free.dev'
+]
 
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'https://*.ngrok-free.dev', # <-- ADD THIS LINE
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -159,3 +168,4 @@ LALAMOVE_BASE_URL = os.getenv("LALAMOVE_BASE_URL")
 XENDIT_API_SECRET = os.getenv("XENDIT_API_SECRET")
 XENDIT_API_KEY = os.getenv("XENDIT_API_KEY")   
 XENDIT_BASE_URL = os.getenv("XENDIT_BASE_URL")
+XENDIT_WEBHOOK_VERIFICATION_TOKEN = os.getenv("XENDIT_WEBHOOK_VERIFICATION_TOKEN")

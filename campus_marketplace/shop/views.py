@@ -1,4 +1,8 @@
+from datetime import datetime, timedelta
+from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
+
+from campus_marketplace.settings import XENDIT_WEBHOOK_VERIFICATION_TOKEN
 from .models import Product, Category, CartItem, Order, OrderItem, Profile, Message, ShippingAddress
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
@@ -135,7 +139,7 @@ def cart_view(request):
     }
     return render(request, "shop/cart.html", context)
 
-
+@login_required(login_url='login')
 def add_to_cart(request, product_id):
     """Add product to cart"""
     if not request.user.is_authenticated:
@@ -182,13 +186,47 @@ def update_cart(request, item_id):
 
 
 @login_required(login_url='login')
-def remove_from_cart(request, item_id):
+def remove_item(request, item_id):
     """Remove item from cart"""
     item = get_object_or_404(CartItem, id=item_id, user=request.user)
     product_name = item.product.name
     item.delete()
     messages.success(request, f'{product_name} removed from cart!')
     return redirect('cart')
+
+@login_required(login_url='login')
+@require_http_methods(["POST"])
+def remove_item(request, item_id):
+    """Deletes a CartItem instance via AJAX."""
+    
+    try:
+        # 1. Security Check & Retrieval: Ensure the item exists AND belongs to the current user.
+        cart_item = get_object_or_404(
+            CartItem, 
+            id=item_id, # Assumes item_id is the primary key (pk) of the CartItem
+            user=request.user 
+        )
+        
+        # 2. Delete the item
+        cart_item.delete()
+        
+        # 3. Success response for AJAX
+        return JsonResponse({
+            'success': True,
+            'message': 'Item removed from cart.'
+        })
+
+    except CartItem.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Cart item not found.'
+        }, status=404)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
 
 
 @login_required(login_url='login')
@@ -822,15 +860,35 @@ def get_shipping_quote(request):
 
             # Assuming you get the order details from the frontend
             data = json.loads(request.body)
+            TUP_address = "Natividad Almeda-Lopez corner A. Villegas and San Marcelino Streets, Ermita, Manila, Metro Manila, Philippines"
+            delivery_address = data.get('delivery_address')
+            schedule_at = (datetime.utcnow() + timedelta(hours=1)).isoformat() + 'Z'
+            service_type = "MOTORCYCLE"
             
-            # This is where we call the Lalamove Python function
-            # ASSUMPTION: get_lalamove_quotation returns the raw Lalamove JSON response
-            quote_response = get_lalamove_quotation(data) 
+            payload = {
+                "data": {
+                    "scheduleAt": schedule_at,
+                    "serviceType": service_type,
+                    "language": "en_PH",
+                    "stops": [
+                        {
+                            "address": TUP_address
+                        },
+                        {
+                            "address": delivery_address
+                        }
+                    ],
+                    "item": {
+                        "quantity": "1",
+                        "weight": "SMALL"
+                    },
+                    # Add any required special requests if necessary, e.g., 'POD' for proof of delivery
+                }
+        }
             
-
+            quote_response = get_lalamove_quotation(payload) 
             quote_data = quote_response.get('data', {}) 
             price_breakdown = quote_data.get('priceBreakdown', {})
-            print("Lalamove Quote Data:", price_breakdown)  # Debugging line
             
             return JsonResponse({
                 "success": True,
@@ -853,7 +911,7 @@ def get_shipping_quote(request):
 
 
 @login_required(login_url='login')
-def save_shipping_address(request):
+def save_address(request):
     """Save user's shipping address"""
     if request.method == 'POST':
         try:
@@ -897,17 +955,51 @@ def save_shipping_address(request):
 
 @login_required(login_url='login')
 def delete_address(request, address_id):
+    data = json.loads(request.body)
+    address_id = data.get('address_id')
     """Remove item from cart"""
     address = get_object_or_404(ShippingAddress, address_id=address_id, user=request.user)
     address.delete()
     messages.success(request, 'Address removed successfully!')
     return redirect('cart')
 
+@login_required(login_url='login')
+@require_http_methods(["POST"]) # Ensure it only accepts POST requests
+def delete_address(request, address_id):
+    """Deletes the shipping address via AJAX and returns JSON status."""
+    
+    try:
+        # Security Check: Use request.user to ensure only the owner can delete
+        address = get_object_or_404(
+            ShippingAddress, 
+            address_id = address_id, # Assumes address_id is the primary key (pk)
+            user=request.user
+        )
+        address.delete()
+        
+        # Success response for AJAX
+        return JsonResponse({
+            'success': True,
+            'message': 'Address removed successfully.'
+        })
+
+    except ShippingAddress.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Address not found or not owned by user.'
+        }, status=404)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+    
 def get_xendit_auth_header():
     import base64
     from django.conf import settings
 
-    auth_string = f"{settings.XENDIT_SECRET_KEY}:"
+    auth_string = f"{settings.XENDIT_API_SECRET}:"
     encoded_auth = base64.b64encode(auth_string.encode()).decode()
     return f"Basic {encoded_auth}"
     
@@ -919,22 +1011,21 @@ def get_base_url(request):
 
 @login_required(login_url='login')
 def create_xendit_invoice(request):
-    """
-    Creates a Xendit Invoice (Payment Link) and redirects the user.
-    """
+    # header body requires shipping_method, final_total
+   
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
 
     try:
         data = json.loads(request.body)
         shipping_method = data.get('shipping_method')
+        shipping_cost = data.get('shipping_cost')
         final_total = float(data.get('final_total', 0)) # Client-side total
 
     except (json.JSONDecodeError, ValueError):
         return JsonResponse({'success': False, 'error': 'Invalid request data'}, status=400)
 
-
-    # 1. SECURITY: Re-calculate total from the database
+    # 1. Calculate Cart Summary
     user_cart_items = CartItem.objects.filter(user=request.user)
     if not user_cart_items.exists():
         return JsonResponse({'success': False, 'error': 'Cart is empty'}, status=400)
@@ -947,24 +1038,24 @@ def create_xendit_invoice(request):
     ).aggregate(cart_subtotal=Sum('item_price'))
     
     subtotal = cart_summary.get('cart_subtotal') or 0
-    tax = subtotal * 0.05
-    shipping_cost = 0 # You must retrieve the actual Lalamove cost here!
+    tax = subtotal * Decimal(0.05)
+    final_shipping_cost = 0 # You must retrieve the actual Lalamove cost here!
     if shipping_method == 'lalamove':
         # Retrieve the cost from session or calculate based on address/cart items
         # For testing, you must replace 50.00 with your actual retrieved shipping cost
-        shipping_cost = 50.00
+        final_shipping_cost = shipping_cost
     
-    server_calculated_total = subtotal + tax + shipping_cost
-    
+    server_calculated_total = subtotal + tax + final_shipping_cost
+       
     # 2. Prepare Xendit Invoice Data
     order_id = f"ORDER-{request.user.id}-{int(time.time())}"
-    
+  
     # Xendit Sandbox Invoice Creation URL
     XENDIT_INVOICE_URL = "https://api.xendit.co/v2/invoices" 
     
     invoice_data = {
         "external_id": order_id, # Your unique order ID
-        "amount": round(server_calculated_total, 2),
+        "amount": str(round(server_calculated_total, 2)),
         "currency": "PHP",
         "description": f"TUP Marketplace Order #{order_id}",
         "payer_email": request.user.email,
@@ -992,8 +1083,7 @@ def create_xendit_invoice(request):
         
         payment_info = response.json()
         
-        # IMPORTANT: Create your PENDING Order object here, using 'order_id' as the reference
-        # Order.objects.create(reference_number=order_id, user=request.user, status='PENDING', ...)
+        Order.objects.create(external_id=order_id, user=request.user, total=server_calculated_total, status='pending')
 
         return JsonResponse({
             'success': True,
@@ -1013,41 +1103,49 @@ def webhook_listener(request):
         return HttpResponse(status=405) # Only accept POST
 
     try:
-        # 1. SECURITY: Verify Xendit Callback Token (CRITICAL)
+        # SECURITY: Verify Xendit Callback Token (CRITICAL)
         # Check Xendit documentation for the exact header name; often 'X-Callback-Token'.
         xendit_token = request.headers.get('X-Callback-Token')
-        if xendit_token != 'YOUR_WEBHOOK_VERIFICATION_TOKEN': # Replace with your token from Xendit settings
+        if xendit_token != XENDIT_WEBHOOK_VERIFICATION_TOKEN: # Replace with your token from Xendit settings
              return HttpResponse('Forbidden: Invalid Callback Token', status=403)
              
-        # 2. Parse Data
+        # Parse Data
         data = json.loads(request.body)
         
         external_id = data.get('external_id') # Your unique order ID
         status = data.get('status') # e.g., 'PAID', 'EXPIRED'
 
-        # 3. Retrieve and Update Order
-        # order = get_object_or_404(Order, reference_number=external_id)
-        
-        # Placeholder logic: Find your order and update its status
+        order = get_object_or_404(Order, external_id=external_id)
+
         if status == 'PAID':
-            # if order.status != 'PAID':
-                # order.status = 'PAID'
-                # order.xendit_invoice_id = data.get('id') # Save the Xendit Invoice ID
-                # order.save()
+            if order.status != 'confirmed':
+                order.status = 'confirmed'
+                order.invoice_id = data.get('id')
+                order.payment_method = 'xendit' # Save the Xendit Invoice ID
+                order.save()
                 
-                # Clear the user's cart and perform inventory updates (CRITICAL)
-                # CartItem.objects.filter(user=order.user).delete()
+                CartItem.objects.filter(user=order.user).delete()
                 
-                # print(f"Order {external_id} paid successfully.")
+                print(f"Order {external_id} paid successfully.")
                 pass
 
-        elif status in ['EXPIRED', 'FAILED', 'CANCELLED']:
-            # order.status = status
-            # order.save()
-            # print(f"Order {external_id} failed with status: {status}.")
-            pass
+        elif status in ['EXPIRED', 'FAILED', 'CLOSED']:
+             if order.status != 'cancelled':
+                order.status = 'cancelled'
+                order.invoice_id = data.get('id') # Save the Xendit Invoice ID
+                order.save()
+                
+                CartItem.objects.filter(user=order.user).delete()
+                
+                print(f"Order {external_id} paid successfully.")
+                pass
+             
             
-        # Xendit expects a 200 OK response to confirm successful receipt
+
+        elif status == 'REFUNDED': 
+            order.status = 'refunded'
+
+            
         return HttpResponse('Webhook received', status=200)
 
     except Exception as e:
@@ -1075,7 +1173,9 @@ def payment_status(request):
     context = {
         'order_id': order_id,
         'message': message,
-        'is_success': is_success
+        'is_success': is_success,
+        'status': status_param
+
     }
     
     # Render a dedicated payment status HTML page

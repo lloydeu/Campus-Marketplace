@@ -9,12 +9,48 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ['name', 'description', 'price', 'stock', 'image', 'category']
 
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model
+from django import forms
+
+User = get_user_model() 
+
 class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    # 1. Custom Fields: Override the default optional fields to make them required
+    first_name = forms.CharField(
+        max_length=150, 
+        required=True, 
+        label='First Name',
+        widget=forms.TextInput(attrs={'placeholder': 'Enter your first name'})
+    )
+    last_name = forms.CharField(
+        max_length=150, 
+        required=True, 
+        label='Last Name',
+        widget=forms.TextInput(attrs={'placeholder': 'Enter your last name'})
+    )
+    # Ensure email is still required
+    email = forms.EmailField(required=True) 
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        # 2. Field List: Explicitly list all desired fields, including the new required ones.
+        # Note: Password fields are automatically included by UserCreationForm logic.
+        fields = ['username', 'email', 'first_name', 'last_name']
+
+    def save(self, commit=True):
+        # 3. Save Method: Use the parent's save method, which handles User creation
+        user = super().save(commit=False)
+        
+        # 4. Set Names: Ensure the names from the form are set on the User object
+        user.first_name = self.cleaned_data.get('first_name')
+        user.last_name = self.cleaned_data.get('last_name')
+        user.email = self.cleaned_data.get('email') # Re-set just in case
+        
+        if commit:
+            user.save()
+        
+        return user
 
 class ProfileForm(forms.ModelForm):
     GENDER_CHOICES = [

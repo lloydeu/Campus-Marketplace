@@ -10,7 +10,7 @@ urlpatterns = [
     path('cart/', views.cart_view, name='cart'),
     path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/update/<int:item_id>/', views.update_cart, name='update_cart'),
-    path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('cart/remove/<int:item_id>/', views.remove_item, name='remove_item'),
     path('checkout/', views.checkout, name='checkout'),
 
     path('add-listing/', views.add_listing, name='add_listing'),
@@ -62,7 +62,7 @@ urlpatterns = [
     path('message/<int:message_id>/reply/', views.reply_message, name='reply_message'),
     path('message/<int:message_id>/delete/', views.delete_message, name='delete_message'),
     path('api/get-shipping-quote/', views.get_shipping_quote, name='get_shipping_quote'),
-    path('api/save-shipping-address/', views.save_shipping_address, name='save_shipping_address'),
+    path('api/save-shipping-address/', views.save_address, name='save_address'),
     path('delete-address/<int:address_id>/', views.delete_address, name='delete_address'),
     path('checkout/pay/', views.create_xendit_invoice, name='create_payment_intent'), # Renamed view function
     path('payment/status/', views.payment_status, name='payment_status'),

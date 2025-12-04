@@ -56,12 +56,16 @@ class Order(models.Model):
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
+        ('refunded', 'Refunded'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+    external_id = models.CharField(max_length=150, blank=True, null=True, unique=True)
     placed_at = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    invoice_id = models.CharField(max_length=100, blank=True, null=True)
+    payment_method = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return f"Order #{self.id} by {self.user.username}"
