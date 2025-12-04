@@ -51,6 +51,15 @@ class UserRegisterForm(UserCreationForm):
             user.save()
         
         return user
+    
+class UserUpdateForm(forms.ModelForm):
+    # Important: Overwrite email to ensure it's required for updates
+    email = forms.EmailField(required=True) 
+    
+    class Meta:
+        model = User
+        # Include ONLY the fields the user can edit (NO password fields)
+        fields = ['first_name', 'last_name', 'email']
 
 class ProfileForm(forms.ModelForm):
     GENDER_CHOICES = [

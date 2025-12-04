@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, ProfileForm, ProductForm
+from .forms import UserRegisterForm, ProfileForm, ProductForm, UserUpdateForm
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView, LoginView
@@ -365,7 +365,7 @@ def edit_profile(request):
     profile = request.user.profile
     
     if request.method == 'POST':
-        user_form = UserRegisterForm(request.POST, instance=request.user)
+        user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
         
         if user_form.is_valid() and profile_form.is_valid():
@@ -376,7 +376,7 @@ def edit_profile(request):
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        user_form = UserRegisterForm(instance=request.user)
+        user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileForm(instance=profile)
     
     context = {
