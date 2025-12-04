@@ -22,8 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!3v@d3dj&g7!o0ysrrk*ij@%5tt55r^ls33w-31yh=^-ce)37+'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -169,3 +167,4 @@ XENDIT_API_SECRET = os.getenv("XENDIT_API_SECRET")
 XENDIT_API_KEY = os.getenv("XENDIT_API_KEY")   
 XENDIT_BASE_URL = os.getenv("XENDIT_BASE_URL")
 XENDIT_WEBHOOK_VERIFICATION_TOKEN = os.getenv("XENDIT_WEBHOOK_VERIFICATION_TOKEN")
+SECRET_KEY = os.getenv("SECRET_KEY")
