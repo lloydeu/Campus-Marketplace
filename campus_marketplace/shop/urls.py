@@ -1,4 +1,5 @@
-from django.urls import path
+from django.conf import settings
+from django.urls import include, path
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -68,7 +69,9 @@ urlpatterns = [
     path('payment/status/', views.payment_status, name='payment_status'),
     path('payment/webhook/', views.webhook_listener, name='webhook_listener'),
    
-
-
-
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        path("__reload__/", include("django_browser_reload.urls")),
+    ]
