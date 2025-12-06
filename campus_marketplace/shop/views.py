@@ -26,7 +26,7 @@ from django.views.decorators.csrf import csrf_exempt
 def homepage(request):
     # Get all categories with product count in a single query
     categories = Category.objects.annotate(
-        product_count=Count('product')
+        product_count=Count('products')
     ).annotate(
         plural=Case(
             When(length__gt=1, then=Value(True)),
