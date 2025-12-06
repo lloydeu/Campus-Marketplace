@@ -1,2 +1,2 @@
 release: python manage.py migrate --noinput && python manage.py collectstatic --noinput
-web: gunicorn campus_marketplace.wsgi --log-file -
+web: gunicorn campus_marketplace.wsgi --log-file - --timeout 60 --workers 1
