@@ -1,2 +1,2 @@
-release: py manage.py migrate --noinput && py manage.py collectstatic --noinput
+release: py manage.py migrate --noinput && py manage.py collectstatic --noinput && echo 123123
 web: gunicorn campus_marketplace.wsgi --log-file -
