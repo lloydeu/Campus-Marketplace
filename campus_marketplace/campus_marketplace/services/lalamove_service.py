@@ -37,7 +37,7 @@ def _make_lalamove_request(method, path, data=None):
     
     response = requests.request(method, url, headers=headers, data=body_json)
     response.raise_for_status() # Raises an exception for 4xx/5xx responses
-    print('\nresponse.json()\n\n',response.json(),"\n", timestamp, method, path, body_json, signature, headers, url, "\n" )
+    print('\nresponse.json()\n\n',json.dumps( response.json),"\n", timestamp, method, path, body_json, signature, headers, url, "\n" )
     return response.json()
 
 # --- Public Interface Functions ---
@@ -48,7 +48,7 @@ def get_lalamove_quotation(order_details_payload):
     Returns the JSON response (including 'quotedTotalFee').
     """
     path = "/v3/quotations"
-    print('\norder_details_payload\n',order_details_payload,"\n")
+    print('\norder_details_payload\n',json.dumps( order_details_payload),"\n", order_details_payload,"\n")
     return _make_lalamove_request("POST", path, data=order_details_payload)
 
 def create_lalamove_order(order_details_payload):
