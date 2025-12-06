@@ -25,7 +25,7 @@ NPM_BIN_PATH = 'C:/Program Files/nodejs/npm.cmd'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
