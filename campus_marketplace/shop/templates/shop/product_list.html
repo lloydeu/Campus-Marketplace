@@ -120,42 +120,50 @@
           <!-- Products Grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for p in products %}
-              <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-              <!-- Product Image - Clickable -->
-              <a href="{% url 'product_detail' p.id %}" class="relative h-48 bg-gray-200 overflow-hidden block">
+                     <div class="overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg flex flex-col h-full">
+            
+            <a href="{% url 'product_detail' p.id %}" 
+               class="relative block w-full overflow-hidden bg-gray-200 flex-shrink-0 aspect-square">
                 {% if p.image %}
-                  <img src="{{ p.image.url }}" alt="{{ p.name }}" class="w-full h-full object-cover hover:scale-105 transition-transform">
+                <img src="{{ p.image.url }}" alt="{{ p.name }}" class="h-full w-full object-cover transition-transform hover:scale-105" />
                 {% else %}
-                  <img src="{% static 'shop/images/placeholder.png' %}" alt="No image available" class="w-full h-full object-cover">
+                <img src="{% static 'shop/images/placeholder.png' %}" alt="No image available" class="h-full w-full object-cover" />
                 {% endif %}
-              </a>
-              
-              <div class="p-4">
-                <!-- Product Title - Clickable -->
-                <a href="{% url 'product_detail' p.id %}" class="block hover:text-red-600 transition">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ p.name }}</h3>
+            </a>
+            
+            <div class="p-4 flex flex-col flex-grow">
+                
+                <a href="{% url 'product_detail' p.id %}" class="block transition hover:text-red-600">
+                  <h3 class="mb-2 text-lg font-semibold text-gray-900 line-clamp-2 leading-snug
+    h-[3rem]">
+                      {{ p.name }}
+                  </h3>
                 </a>
-                
-                <p class="text-red-600 font-bold text-xl mb-2">₱{{ p.price }}</p>
-                <p class="text-sm text-gray-600 mb-4">Stock: <span class="font-medium">{{ p.stock }}</span></p>
-                
-                <!-- Buttons -->
-                <div class="flex gap-2">
-                  <!-- View Details Button -->
-                  <a href="{% url 'product_detail' p.id %}" class="flex-1 text-center bg-red-600 text-white py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
-                    View Details
-                  </a>
-                  
-                  <!-- Add to Cart Button -->
-                  <form method="post" action="{% url 'add_to_cart' p.id %}" class="flex-1">
-                    {% csrf_token %}
-                    <button type="submit" class="w-full text-center bg-red-600 text-white py-2 rounded-md font-medium hover:bg-blue-700 transition-colors">
-                      Add to Cart
-                    </button>
-                  </form>
+
+                <div class="mb-4">
+                    <p class="text-xl font-bold text-red-600">₱{{ p.price }}</p>
+                    <p class="text-sm text-gray-600">Stock: <span class="font-medium">{{ p.stock }}</span></p> 
                 </div>
-              </div>
+                
+                <div class="flex-grow"></div> 
+
+                <div class="flex gap-2 mt-0"> 
+                    
+                    <a href="{% url 'product_detail' p.id %}" 
+                       class="flex-1 w-full rounded-md bg-red-600 py-2 text-center font-medium text-white transition-colors hover:bg-blue-700"> 
+                    View Details 
+                    </a>
+                    
+                    <form method="post" action="{% url 'add_to_cart' p.id %}" class="flex-1">
+                        {% csrf_token %}
+                        <button type="submit" 
+                          class="w-full rounded-md bg-red-600 py-2 text-center font-medium text-white transition-colors hover:bg-red-700">
+                        Add to Cart
+                        </button>
+                    </form>
+                </div>
             </div>
+        </div>
             
             {% empty %}
               <div class="col-span-full text-center py-12">

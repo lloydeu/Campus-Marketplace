@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,14 +30,17 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    'superlaboriously-teeniest-lizette.ngrok-free.dev'
+    '*.ngrok-free.dev',
+    '.railway.app',
+
 ]
 
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'https://*.ngrok-free.dev', # <-- ADD THIS LINE
+    'https://*.ngrok-free.dev',
+    'https://*.railway.app',
 ]
 # Application definition
 
@@ -46,16 +50,21 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+   
     'shop',
     'tailwind',
     'django_browser_reload',
+    'cloudinary_storage',
+    'cloudinary',
+
+    'django.contrib.staticfiles',
  
 ]
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_browser_reload.middleware.BrowserReloadMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'campus_marketplace.urls'
@@ -113,6 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 
 # Internationalization
@@ -169,8 +180,27 @@ LALAMOVE_API_KEY = os.getenv("LALAMOVE_API_KEY")
 LALAMOVE_API_SECRET = os.getenv("LALAMOVE_API_SECRET")
 LALAMOVE_MARKET = os.getenv("LALAMOVE_MARKET")
 LALAMOVE_BASE_URL = os.getenv("LALAMOVE_BASE_URL")
+
 XENDIT_API_SECRET = os.getenv("XENDIT_API_SECRET")
 XENDIT_API_KEY = os.getenv("XENDIT_API_KEY")   
 XENDIT_BASE_URL = os.getenv("XENDIT_BASE_URL")
 XENDIT_WEBHOOK_VERIFICATION_TOKEN = os.getenv("XENDIT_WEBHOOK_VERIFICATION_TOKEN")
+
 SECRET_KEY = os.getenv("SECRET_KEY")
+
+CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET')
+
+# Get the Database URL from environment variables
+if os.getenv('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+    'API_KEY': CLOUDINARY_API_KEY,
+    'API_SECRET': CLOUDINARY_API_SECRET
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
