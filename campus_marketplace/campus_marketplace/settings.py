@@ -98,14 +98,21 @@ WSGI_APPLICATION = 'campus_marketplace.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://localhost/campus_marketplace',
-        conn_max_age=600,
-        conn_health_checks=True,  # Add this
-    )
-}
+if os.getenv('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='postgresql://localhost/campus_marketplace',
+            conn_max_age=600,
+            conn_health_checks=True,  # Add this
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
