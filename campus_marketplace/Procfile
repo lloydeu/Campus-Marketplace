@@ -1,2 +1,2 @@
-release: python manage.py migrate --noinput && python manage.py collectstatic --noinput
+release: python manage.py migrate --noinput && python manage.py migrate sessions --noinput && python manage.py collectstatic --noinput && python manage.py createsuperuser --noinput
 web: gunicorn campus_marketplace.wsgi --log-file - --timeout 60 --workers 1
