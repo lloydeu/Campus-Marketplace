@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
    
     'shop',
-    'tailwind',
     'cloudinary_storage',
 ]
 
