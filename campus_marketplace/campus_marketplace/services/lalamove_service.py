@@ -12,7 +12,6 @@ from campus_marketplace.settings import LALAMOVE_BASE_URL as BASE_URL
 def _generate_signature(api_secret, timestamp, method, path, body_json=""):
     """Internal helper to generate the HMAC-SHA256 signature."""
     raw_signature = f"{timestamp}\r\n{method}\r\n{path}\r\n\r\n{body_json}"
-    print('\nraw_signature\n',raw_signature,'\n', timestamp, method, path, body_json,"\n")
     return hmac.new(
         bytes(api_secret, 'utf-8'),
         bytes(raw_signature, 'utf-8'),
@@ -37,7 +36,6 @@ def _make_lalamove_request(method, path, data=None):
     
     response = requests.request(method, url, headers=headers, data=body_json)
     response.raise_for_status() # Raises an exception for 4xx/5xx responses
-    print('response.json',response.json,"\n", timestamp, method, path, body_json, signature, headers, url, "\n" )
     return response.json()
 
 # --- Public Interface Functions ---
@@ -48,7 +46,6 @@ def get_lalamove_quotation(order_details_payload):
     Returns the JSON response (including 'quotedTotalFee').
     """
     path = "/v3/quotations"
-    print('\norder_details_payload\n',json.dumps( order_details_payload),"\n", order_details_payload,"\n")
     return _make_lalamove_request("POST", path, data=order_details_payload)
 
 def create_lalamove_order(order_details_payload):
