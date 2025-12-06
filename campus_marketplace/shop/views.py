@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView, LoginView
 from django.views.decorators.http import require_http_methods
-from django.db.models import Q, Sum, F, ExpressionWrapper, DecimalField, Count, Case, When, Value, BooleanField
+from django.db.models import Q, Sum, F, ExpressionWrapper, DecimalField
 from django.shortcuts import render
 from django.http import JsonResponse
 from campus_marketplace.services.lalamove_service import get_lalamove_quotation, create_lalamove_order
@@ -23,17 +23,18 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
+from django.db.models import Count
+
 def homepage(request):
-    # Get all categories with product count in a single query
+    # Get all categories with product count
     categories = Category.objects.annotate(
         product_count=Count('products')
-    ).annotate(
-        isplural=Case(
-            When(length__gt=1, then=Value(True)),
-            default=Value(False),
-            output_field=BooleanField()
-        )
     )
+    
+    # Update the length and plural fields (one query per category)
+    for category in categories:
+        category.length = category.product_count
+        category.plural = category.product_count > 1
     
     latest = Product.objects.order_by('-created_at')[:6]
 
