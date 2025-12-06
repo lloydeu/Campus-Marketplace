@@ -161,7 +161,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'eubertlloyd5@gmail.com'
-EMAIL_HOST_PASSWORD = 'dpyx swyb ymlu njsj '  # Use app password for Gmail
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Use app password for Gmail
 DEFAULT_FROM_EMAIL = 'eubertlloyd5@gmail.com'
 
 
