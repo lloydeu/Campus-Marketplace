@@ -23,21 +23,17 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
-from django.db.models import Count
-
 def homepage(request):
-    # Get all categories with product count
-    categories = Category.objects.annotate(
-        product_count=Count('products')
-    )
-    
-    # Update the length and plural fields (one query per category)
-    for category in categories:
-        category.length = category.product_count
-        category.plural = category.product_count > 1
-    
+    categories = Category.objects.all()
     latest = Product.objects.order_by('-created_at')[:6]
 
+    for category in categories:
+
+        category.length = len((Product.objects.all().filter(category=category)))
+        if category.length > 1:
+            category.plural = True
+
+           
     return render(request, "shop/index.html", {
         "categories": categories,
         "latest": latest,
