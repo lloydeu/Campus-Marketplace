@@ -92,7 +92,7 @@ if os.getenv('DATABASE_URL'):
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'), # Use default if not explicitly passed
             conn_max_age=600,
-            conn_health_check=True, # Recommended for production connections
+            conn_health_checks=True, # Recommended for production connections
         )
     }
 else:
