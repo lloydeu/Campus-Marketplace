@@ -28,7 +28,7 @@ def homepage(request):
     categories = Category.objects.annotate(
         product_count=Count('products')
     ).annotate(
-        plural=Case(
+        isplural=Case(
             When(length__gt=1, then=Value(True)),
             default=Value(False),
             output_field=BooleanField()
