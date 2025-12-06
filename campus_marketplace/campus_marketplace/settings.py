@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'campus_marketplace.wsgi.application'
 
 
 if os.getenv('DATABASE_URL'):
-    # Use the production database configuration (PostgreSQL)
+    print(123445)
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'), # Use default if not explicitly passed
@@ -96,7 +96,7 @@ if os.getenv('DATABASE_URL'):
         )
     }
 else:
-    # Use the development database configuration (SQLite)
+    print(234)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
