@@ -864,6 +864,7 @@ def get_shipping_quote(request):
             delivery_address = data.get('delivery_address')
             schedule_at = (datetime.utcnow() + timedelta(hours=1)).isoformat() + 'Z'
             service_type = "MOTORCYCLE"
+            print('schedule_at:', schedule_at)
             
             payload = {
                 "data": {
