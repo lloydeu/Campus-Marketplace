@@ -70,8 +70,3 @@ urlpatterns = [
     path('payment/webhook/', views.webhook_listener, name='webhook_listener'),
    
 ]
-
-if settings.DEBUG:
-    urlpatterns += [
-        path("__reload__/", include("django_browser_reload.urls")),
-    ]
