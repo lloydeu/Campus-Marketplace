@@ -37,7 +37,7 @@ def _make_lalamove_request(method, path, data=None):
     
     response = requests.request(method, url, headers=headers, data=body_json)
     response.raise_for_status() # Raises an exception for 4xx/5xx responses
-    print('\nresponse.json()\n\n',response.json(),"\n")
+    print('\nresponse.json()\n\n',response.json(),"\n", timestamp, method, path, body_json, signature, headers, url, "\n" )
     return response.json()
 
 # --- Public Interface Functions ---
