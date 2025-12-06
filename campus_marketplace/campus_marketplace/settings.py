@@ -25,16 +25,14 @@ NPM_BIN_PATH = 'C:/Program Files/nodejs/npm.cmd'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    '*.ngrok-free.dev',
+    '.ngrok-free.dev',
     '.railway.app',
-
 ]
-
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
@@ -42,7 +40,6 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.dev',
     'https://*.railway.app',
 ]
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -54,14 +51,8 @@ INSTALLED_APPS = [
    
     'shop',
     'tailwind',
-    'django_browser_reload',
     'cloudinary_storage',
-    
-
-   
- 
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -72,7 +63,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
     
 ]
 
