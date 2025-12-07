@@ -132,16 +132,20 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Source - https://stackoverflow.com/a
+# Posted by Gaddafi adamu, modified by community. See post 'Timeline' for change history
+# Retrieved 2025-12-07, License - CC BY-SA 4.0
 
-# Media files (User uploads) - Stored on Cloudinary
-MEDIA_URL = '/media/'
-if os.getenv('USE_CLOUDINARY') == 'True':
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    MEDIA_URL = '/media/'
-else:
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    MEDIA_URL = '/media/'
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+
 # Cloudinary Configuration
 import cloudinary
 
