@@ -15,26 +15,23 @@ import os
 import dj_database_url
 from dotenv import load_dotenv
 
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-NPM_BIN_PATH = 'C:/Program Files/nodejs/npm.cmd'
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '*.ngrok-free.dev',
-    '.railway.app',
-
+    '*.railway.app',
 ]
-
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
@@ -42,8 +39,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.dev',
     'https://*.railway.app',
 ]
-# Application definition
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,28 +48,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-   
     'shop',
     'tailwind',
-    'cloudinary_storage',
-    
-
-   
- 
+    'cloudinary_storage',  # Must come before cloudinary
+    'cloudinary',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-   
-    
 ]
 
 ROOT_URLCONF = 'campus_marketplace.urls'
@@ -94,16 +84,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'campus_marketplace.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 if os.getenv('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(
-            default='postgresql://localhost/campus_marketplace',
+            default=os.getenv('DATABASE_URL'),
             conn_max_age=600,
-            conn_health_checks=True,  # Add this
+            conn_health_checks=True,
         )
     }
 else:
@@ -114,10 +103,7 @@ else:
         }
     }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -133,84 +119,70 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = 'static/'
-
+# Static files (CSS, JavaScript, Images) - Served by WhiteNoise
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-
+# Media files (User uploads) - Stored on Cloudinary
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# Cloudinary Configuration
+import cloudinary
+
+CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET')
+
+cloudinary.config(
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET,
+)
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+    'API_KEY': CLOUDINARY_API_KEY,
+    'API_SECRET': CLOUDINARY_API_SECRET,
+    'FOLDER': 'django-media/',
+}
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Authentication
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-
-
-load_dotenv() 
 
 # Email Configuration (using Gmail)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'eubertlloyd5@gmail.com'
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') 
-DEFAULT_FROM_EMAIL = 'eubertlloyd5@gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
 
+# Lalamove Configuration
 LALAMOVE_API_KEY = os.getenv("LALAMOVE_API_KEY")
 LALAMOVE_API_SECRET = os.getenv("LALAMOVE_API_SECRET")
 LALAMOVE_MARKET = os.getenv("LALAMOVE_MARKET")
 LALAMOVE_BASE_URL = os.getenv("LALAMOVE_BASE_URL")
 
+# Xendit Configuration
 XENDIT_API_SECRET = os.getenv("XENDIT_API_SECRET")
-XENDIT_API_KEY = os.getenv("XENDIT_API_KEY")   
+XENDIT_API_KEY = os.getenv("XENDIT_API_KEY")
 XENDIT_BASE_URL = os.getenv("XENDIT_BASE_URL")
 XENDIT_WEBHOOK_VERIFICATION_TOKEN = os.getenv("XENDIT_WEBHOOK_VERIFICATION_TOKEN")
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-
-CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET')
-
-# Get the Database URL from environment variables
-if os.getenv('DATABASE_URL'):
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
-
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
-    'API_KEY': CLOUDINARY_API_KEY,
-    'API_SECRET': CLOUDINARY_API_SECRET
-}
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
