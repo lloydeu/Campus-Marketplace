@@ -30,7 +30,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '*.ngrok-free.dev',
-    '*.railway.app',
+    '*.up.railway.app',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
