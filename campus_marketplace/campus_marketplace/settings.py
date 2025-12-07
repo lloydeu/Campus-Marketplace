@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '*.ngrok-free.dev',
+    'tupmarketplace.up.railway.app',
     '*.up.railway.app',
 ]
 
