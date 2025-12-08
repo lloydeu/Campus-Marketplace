@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     '*.ngrok-free.dev',
     'tupmarketplace.up.railway.app',
     '*.up.railway.app',
+    'newearthtech.up.railway.app'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
