@@ -195,37 +195,37 @@
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
                           <input type="text" name="full_name" value="{{ user.get_full_name }}" id="full_name"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" required>
                         </div>
 
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
                           <input type="tel" name="phone" value="{{ user.profile.phone_number }}" placeholder="+63 9XX XXX XXXX" id="phone"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" required>
                         </div>
 
                         <div class="md:col-span-2">
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address *</label>
                           <input type="text" name="address" value="{{ user.profile.address }}" id="address"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" required>
                         </div>
 
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
                           <input type="text" name="city" value="{{ user.profile.city }}" id="city"  
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" required>
                         </div>
 
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Province *</label>
                           <input type="text" name="province" value="{{ user.profile.province }}" id="province"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" required>
                         </div>
 
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code *</label>
                           <input type="text" name="postal_code" value="{{ user.profile.postal_code }}" id="postal_code"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" required>
                         </div>
                         <div class="md:col-span-2 flex justify-end">
                         <button type="button" id="save_address_button" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 transition" onclick="save_address()">
@@ -261,7 +261,7 @@
                     <span id="shipping-cost">₱0.00</span>
                   </div>
                   <div class="flex justify-between text-gray-600">
-                    <span>Processing Fee (5%)</span>
+                    <span>Processing Fee</span>
                     <span>₱<span id="tax">{{ tax }}</span></span>
                   </div>
                 </div>
@@ -335,7 +335,7 @@
                 </a>
 
                 <p class="text-xs text-gray-500 text-center mt-4">
-                  🔒 Secure checkout poweteal by encryption
+                  🔒 Secure checkout powered by encryption
                 </p>
               </div>
             </div>
@@ -363,7 +363,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
             </svg>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">Login Requiteal</h2>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Login Required</h2>
           <p class="text-gray-600 mb-6">You need to login to access your shopping cart. Create an account or login to continue shopping.</p>
           <div class="flex flex-col sm:flex-row gap-3 justify-center">
             <a href="{% url 'login' %}" class="inline-block bg-teal-600 text-white font-bold py-3 px-8 rounded-md hover:bg-teal-700 transition-colors">
@@ -459,6 +459,7 @@
       radio.addEventListener('change', function() {
         paymentMethod.value = this.value;
       });
+    });
 
     // On page load, check if Lalamove is selected
     if (initselectedShipping === 'lalamove') {
@@ -501,14 +502,14 @@
       })
       .catch(error => {
         console.error('Network error:', error);
-        alert('A network error occurteal while saving the address.');
+        alert('A network error occurred while saving the address.');
       });
     }
 
     function updateAddress() {
     // 1. Get the data array from the JSON script tag
     const addressesJsonElement = document.getElementById('user-addresses-data');
-    console.log(addressesJsonElement.textContent);
+    
     const userAddresses = JSON.parse(addressesJsonElement.textContent);
     
     // 2. Get the value of the currently selected radio button
@@ -653,7 +654,7 @@
       })
       .catch(error => {
         console.error('Network error:', error);
-        alert('A network error occurteal while fetching the quote.');
+        alert('A network error occurred while fetching the quote.');
         getQuoteBtn.disabled = false;
         getQuoteBtn.textContent = 'Get Quote';
       });
@@ -686,7 +687,7 @@
     })
     .catch(error => {
         console.error('AJAX Network Error:', error);
-        alert('A network error occurteal while deleting the address.');
+        alert('A network error occurred while deleting the address.');
     });
 }
 
@@ -696,15 +697,13 @@ function checkout() {
     // Assuming 'total' is the ID of an input field containing the final price.
     const final_total = document.getElementById('total').value; 
     const shipping_method = document.querySelector('input[name="shipping"]:checked').value;
+    const payment_method = document.querySelector('input[name="payment"]:checked').value; 
     
     // Clean and convert shipping cost:
     const shipping_cost_text = shippingCostDisplay.textContent; // Assuming shippingCostDisplay is in scope
     const shipping_cost = parseFloat(shipping_cost_text.replace(/[^0-9.]/g, '')); 
     
-    // Optional: Add basic input validation
-
-
-    // Optional: Disable button to prevent double submission
+  
     const submitButton = document.getElementById('placeOrderBtn'); 
     if (submitButton) submitButton.disabled = true;
 
@@ -717,6 +716,7 @@ function checkout() {
             "X-CSRFToken": csrftoken // Requires csrftoken to be in scope
         },
         body: JSON.stringify({
+            "payment_method": payment_method,
             "shipping_method": shipping_method,
             "final_total": final_total,
             "shipping_cost": shipping_cost // Already converted to a number
@@ -733,18 +733,18 @@ function checkout() {
     })
     .then(data => {
         if (data.success) {
-            console.log(data);
+            
             
             // 💡 CRITICAL: Handle success based on payment type
-            if (data.tealirect_url) {
-                // Case 1: Online Payment (Xendit) - tealirect to the payment gateway
-                window.location.href = data.tealirect_url;
+            if (data.redirect_url) {
+                // Case 1: Online Payment (Xendit) - redirect to the payment gateway
+                window.location.href = data.redirect_url;
                 
             } else if (data.order_id) {
-                // Case 2: Cash On Pickup (COP) - tealirect to order confirmation page
-                alert('Order placed successfully! tealirecting to confirmation page.');
-                // Note: Replaces '0' placeholder with the actual order ID
-               console.log(data.payment_url)
+                // Case 2: Cash On Pickup (COP) - redirect to order confirmation page
+                alert('Order placed successfully! redirecting to confirmation page.');
+                
+             
             
             } else {
                 alert('Checkout successful, but response format was unexpected.');
@@ -760,7 +760,7 @@ function checkout() {
         // Network failure
         if (submitButton) submitButton.disabled = false;
         console.error('Network error:', error);
-        alert(`A network or server error occurteal: ${error.message}`);
+        alert(`A network or server error occurred: ${error.message}`);
     });
 }
 
@@ -800,7 +800,7 @@ function checkout() {
     })
     .catch(error => {
         console.error('AJAX Error:', error);
-        alert(`A network error occurteal: ${error.message}`);
+        alert(`A network error occurred: ${error.message}`);
     });
 }
           

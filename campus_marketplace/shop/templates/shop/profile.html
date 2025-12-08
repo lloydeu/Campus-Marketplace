@@ -256,7 +256,7 @@
               <tbody class="divide-y divide-gray-200">
                 {% for order in request.user.orders.all %}
                   <tr class="hover:bg-gray-50 transition">
-                    <td class="px-3 md:px-6 py-4 font-medium text-teal-600">#{{ order.id }}</td>
+                    <td class="px-3 md:px-6 py-4 font-medium text-teal-600">#{{ order.external_id }}</td>
                     <td class="px-3 md:px-6 py-4 text-gray-900">₱{{ order.total }}</td>
                     <td class="px-3 md:px-6 py-4 text-gray-600">{{ order.placed_at|date:"M d, Y" }}</td>
                     <td class="px-3 md:px-6 py-4">

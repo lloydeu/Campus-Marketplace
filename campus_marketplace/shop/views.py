@@ -125,7 +125,7 @@ def cart_view(request):
     
     # Calculate totals
     subtotal = sum(float(item.line_total()) for item in cart_items)
-    tax = subtotal * 0.05 
+    tax = 30 
     
     total = subtotal + tax 
     
@@ -242,7 +242,7 @@ def checkout(request):
     if request.method == 'POST':
         # Calculate totals
         total_amount = sum(float(item.line_total()) for item in cart_items)
-        tax = total_amount * 0.05
+        tax = 30
         shipping = 50.00
         final_total = total_amount + tax + shipping
         
@@ -1018,10 +1018,12 @@ def create_xendit_invoice(request):
         return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
 
     try:
+        
         data = json.loads(request.body)
         shipping_method = data.get('shipping_method')
         shipping_cost = data.get('shipping_cost')
-        final_total = float(data.get('final_total', 0)) # Client-side total
+        payment_method = data.get('payment_method', 2)
+       
 
     except (json.JSONDecodeError, ValueError):
         return JsonResponse({'success': False, 'error': 'Invalid request data'}, status=400)
@@ -1040,10 +1042,8 @@ def create_xendit_invoice(request):
     
     subtotal = cart_summary.get('cart_subtotal') or 0
     tax = subtotal * Decimal(0.05)
-    final_shipping_cost = 0 # You must retrieve the actual Lalamove cost here!
+    final_shipping_cost = 0 
     if shipping_method == 'lalamove':
-        # Retrieve the cost from session or calculate based on address/cart items
-        # For testing, you must replace 50.00 with your actual retrieved shipping cost
         final_shipping_cost = shipping_cost
     
     server_calculated_total = subtotal + tax + final_shipping_cost
@@ -1069,6 +1069,14 @@ def create_xendit_invoice(request):
         "failure_redirect_url": get_base_url(request) + reverse_lazy('payment_status') + f"?order_id={order_id}&status=failed",
         "callback_url": get_base_url(request) + reverse_lazy('webhook_listener'), # Secure, server-to-server confirmation
     }
+    
+    if payment_method == 'cod':
+        Order.objects.create(external_id=order_id, user=request.user, total=server_calculated_total, status='pending')
+        order = get_object_or_404(Order, external_id=order_id)
+        
+        CartItem.objects.filter(user=order.user).delete()
+        return JsonResponse({'success': True, 'redirect_url': get_base_url(request) + reverse_lazy('payment_status') + f"?order_id={order_id}"})
+        
     
     # 3. Call Xendit API
     try:
