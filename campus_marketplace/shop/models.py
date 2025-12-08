@@ -140,6 +140,7 @@ class Profile(models.Model):
     shop_country = models.CharField(max_length=100, default='Philippines', help_text="Shop country")
     
     total_sales = models.PositiveIntegerField(default=0, help_text="Total number of sales")
+    seller_identification =models.ImageField(upload_to='identifications/', blank=True, null=True, help_text="Identification document")
     
     # Account Settings
     email_notifications = models.BooleanField(default=True, help_text="Receive email notifications")

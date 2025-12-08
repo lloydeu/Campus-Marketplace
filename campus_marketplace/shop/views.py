@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, ProfileForm, ProductForm, UserUpdateForm
+from .forms import UserRegisterForm, ProfileForm, ProductForm, UserUpdateForm, ShopProfileForm
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView, LoginView
@@ -392,6 +392,10 @@ def edit_profile(request):
 def become_seller(request):
     """Allow user to become a seller"""
     profile = request.user.profile
+    if request.method == 'GET':
+        form = ShopProfileForm(instance=profile)
+    if request.method == 'POST':
+        form = ShopProfileForm(request.POST, request.FILES, instance=profile)
     
     # If already a seller
     if profile.is_seller:
@@ -420,7 +424,8 @@ def become_seller(request):
         messages.success(request, f'Welcome! {shop_name} is now active. You can start selling!')
         return redirect('profile')
     
-    return render(request, 'shop/become_seller.html', {'profile': profile})
+    return render(request, 'shop/become_seller.html', {'profile': profile,
+                                                       'form': form})
 
 @login_required(login_url='login')
 def seller_dashboard(request):
@@ -683,14 +688,14 @@ def seller_profile_settings(request):
         return redirect('profile')
     
     if request.method == 'POST':
-        from .forms import ShopProfileForm
+        
         form = ShopProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Shop settings updated successfully!')
             return redirect('seller_dashboard')
     else:
-        from .forms import ShopProfileForm
+       
         form = ShopProfileForm(instance=profile)
     
     context = {
