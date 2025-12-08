@@ -91,3 +91,22 @@ class ProfileForm(forms.ModelForm):
 class CartForm(forms.Form):
     quantity = forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'class': 'w-16 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-red-500'}))
     shipping_method = forms.ChoiceField(choices=[('S', 'Standard Shipping'), ('P', 'Pick-up')], widget=forms.Select(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'}))
+
+class ShopProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['shop_name', 'shop_description', 'shop_logo', 'shop_address', 'shop_city', 'shop_province', 'shop_postal_code', 'shop_country', 'shop_phone_number', 'shop_alternate_phone', 'email_notifications', 'newsletter_subscription']
+        widgets = {
+            'shop_name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'}),
+            'shop_description': forms.Textarea(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500', 'rows': 4}),
+            'shop_logo': forms.FileInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500', 'accept': 'image/*'}),
+            'shop_address': forms.Textarea(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500', 'rows': 3}),
+            'shop_city': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'}),
+            'shop_province': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'}),
+            'shop_postal_code': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'}),
+            'shop_country': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'}),
+            'shop_phone_number': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500', 'placeholder': '+63 9XX XXX XXXX'}),
+            'shop_alternate_phone': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500', 'placeholder': '+63 9XX XXX XXXX'}),
+            'email_notifications': forms.CheckboxInput(attrs={'class': 'w-6 h-6 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'}),
+            'newsletter_subscription': forms.CheckboxInput(attrs={'class': 'w-6 h-6 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500'}),
+            }

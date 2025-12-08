@@ -4,78 +4,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopping Cart - TUP Marketplace</title>
+  <title>Shopping Cart - New Earth Tech</title>
   <link rel="stylesheet" href="{% static 'shop/css/styles.css' %}">
 </head>
 
 <body>
   <!-- Header -->
-  <header class="bg-red-600 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3 flex-shrink-0">
-        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
-          <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto"> 
-          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
-        </a>
+  <header class="bg-white/95 backdrop-blur-sm shadow-md">
+      <!-- Top Bar -->
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <!-- Logo and Title (Left) -->
+        <div class="flex flex-shrink-0 items-center gap-3">
+          <a href="{% url 'homepage' %}" class="flex items-center gap-3 transition hover:opacity-80">
+            <img src="{% static 'shop/images/logo.png' %}" alt="New Earth Tech Logo" class="h-16 w-auto drop-shadow-md" />
+            <div>
+              <h1 class="text-xl font-bold text-gray-800">New Earth Tech</h1>
+              <p class="text-xs text-teal-600">University Marketplace</p>
+            </div>
+          </a>
+        </div>
+        <!-- Hamburger Menu Button -->
+        <button id="menuBtn" class="flex-shrink-0 rounded-md p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <!-- Search Bar (Center) - Hidden on Mobile -->
+        <div class="hidden max-w-2xl flex-1 md:flex">
+          <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+            <input type="text" name="q" placeholder="Search products..." class="min-w-0 flex-1 rounded-l-lg border-2 border-r-0 border-teal-500 bg-white px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500" />
+            <button type="submit" class="flex-shrink-0 rounded-r-lg bg-teal-600 px-8 py-3 font-semibold text-white transition hover:bg-teal-700">Search</button>
+          </form>
+        </div>
+        <!-- Nav links (Right) - Hidden on Mobile -->
+        <nav class="hidden flex-shrink-0 gap-4 whitespace-nowrap items-center text-gray-700 lg:flex">
+          <a href="{% url 'homepage' %}" class="font-medium transition hover:text-teal-600">Home</a>
+          <a href="{% url 'product_list' %}" class="font-medium transition hover:text-teal-600">Products</a>
+          <a href="{% url 'cart' %}" class="font-medium transition hover:text-teal-600">Cart</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'messages_inbox' %}" class="flex items-center gap-2 font-medium transition hover:text-teal-600">
+          Messages {% if user.is_authenticated %} {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %} {% if unread_count > 0 %}
+          <span class="rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"> {{ unread_count }} </span>
+          {% endif %} {% endwith %} {% endif %}
+          </a>
+          <a href="{% url 'profile' %}" class="font-medium transition hover:text-teal-600">Profile</a>
+          <a href="{% url 'logout' %}" class="font-medium transition hover:text-teal-600">Logout</a>
+          {% else %}
+          <a href="{% url 'login' %}" class="font-medium transition hover:text-teal-600">Login</a>
+          <a href="{% url 'register' %}" class="font-medium transition hover:text-teal-600">Register</a>
+          {% endif %}
+        </nav>
       </div>
-      
-      <button id="menuBtn" class="lg:hidden flex-shrink-0 p-2 hover:bg-red-700 rounded-md transition">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
-
-      <div class="hidden md:flex flex-1 max-w-2xl">
+      <!-- Mobile Search Bar -->
+      <div class="px-4 pb-3 md:hidden">
         <form action="{% url 'product_list' %}" method="get" class="flex w-full">
-          <input type="text" name="q" placeholder="Search products..."
-               class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
-          <button type="submit"
-              class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500 flex-shrink-0">
-            Go
-          </button>
+          <input type="text" name="q" placeholder="Search products..." class="min-w-0 flex-1 rounded-l-lg border-2 border-r-0 border-teal-500 px-4 py-3 text-gray-800 focus:outline-none" />
+          <button type="submit" class="rounded-r-lg bg-teal-600 px-6 py-3 font-semibold text-white hover:bg-teal-700">Go</button>
         </form>
       </div>
-
-      <nav class="hidden lg:flex gap-6 whitespace-nowrap flex-shrink-0">
-        <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
-        <a href="{% url 'product_list' %}" class="hover:text-gray-300">Products</a>
-        <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
-          <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
-        {% else %}
-          <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
-          <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
-        {% endif %}
+      <!-- Mobile Menu -->
+      <nav id="mobileMenu" class="hidden border-t border-gray-200 bg-white md:hidden">
+        <div class="mx-auto max-w-7xl space-y-1 px-4 py-2">
+          <a href="{% url 'homepage' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Home</a>
+          <a href="{% url 'product_list' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Products</a>
+          <a href="{% url 'cart' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Cart</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'messages_inbox' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">
+            Messages {% if user.is_authenticated %} {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %} {% if unread_count > 0 %}
+            <span class="ml-2 inline-block rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"> {{ unread_count }} </span>
+            {% endif %} {% endwith %} {% endif %} </a>
+          <a href="{% url 'profile' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Profile</a>
+          <a href="{% url 'logout' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Logout</a>
+          {% else %}
+          <a href="{% url 'login' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Login</a>
+          <a href="{% url 'register' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Register</a>
+          {% endif %}
+        </div>
       </nav>
-    </div>
-
-    <div class="md:hidden px-4 pb-3">
-      <form action="{% url 'product_list' %}" method="get" class="flex w-full">
-        <input type="text" name="q" placeholder="Search products..."
-             class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
-        <button type="submit"
-            class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
-          Go
-        </button>
-      </form>
-    </div>
-
-    <nav id="mobileMenu" class="hidden md:hidden bg-red-700 border-t border-red-500">
-      <div class="max-w-7xl mx-auto px-4 py-2 space-y-1">
-        <a href="{% url 'homepage' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Home</a>
-        <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Products</a>
-        <a href="{% url 'cart' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Cart</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Profile</a>
-          <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Logout</a>
-        {% else %}
-          <a href="{% url 'login' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Login</a>
-          <a href="{% url 'register' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Register</a>
-        {% endif %}
-      </div>
-    </nav>
-  </header>
+    </header>
 
   <main class="bg-gray-50 py-8 md:py-12">
     <div class="max-w-7xl mx-auto px-4">
@@ -100,7 +106,7 @@
               <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
                 <div class="px-4 md:px-6 py-4 border-b border-gray-200 bg-white-50">
                   <h2 class="text-lg md:text-xl font-bold text-gray-900">
-                    Items in Cart <span class="text-red-600">({{ cart_items.count }})</span>
+                    Items in Cart <span class="text-teal-600">({{ cart_items.count }})</span>
                   </h2>
                 </div>
 
@@ -118,16 +124,16 @@
 
                         <div class="flex-1 min-w-0">
                           <h3 class="text-base md:text-lg font-semibold text-gray-900 mb-1 truncate">
-                            <a href="{% url 'product_detail' item.product.id %}" class="hover:text-red-600">
+                            <a href="{% url 'product_detail' item.product.id %}" class="hover:text-teal-600">
                               {{ item.product.name }}
                             </a>
                           </h3>
                           <p class="text-sm text-gray-600 mb-2">Seller: {{ item.product.seller.username }}</p>
-                          <p class="text-sm md:text-base font-bold text-red-600 mb-3">₱{{ item.product.price }}</p>
+                          <p class="text-sm md:text-base font-bold text-teal-600 mb-3">₱{{ item.product.price }}</p>
 
                           <div class="flex items-center gap-3">
                             <span class="text-sm text-gray-600">Qty:</span>
-                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="w-12 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-red-500" 
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="w-12 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-teal-500" 
                               data-item-id="{{ item.id }}"
           onclick="updateQuantity(this, 'increase')"></input>
                            </div>
@@ -138,7 +144,7 @@
                             <p class="text-sm text-gray-600 mb-1">Subtotal</p>
                             <p class="text-lg md:text-xl font-bold text-gray-900">₱{{ item.line_total }}</p>
                           </div>
-                          <button class="text-red-600 hover:text-red-800 font-medium text-sm transition" value="{{item.id}}" onclick="remove_item(this.value)">
+                          <button class="text-teal-600 hover:text-teal-800 font-medium text-sm transition" value="{{item.id}}" onclick="remove_item(this.value)">
                               Remove
                           </button>
                         </div>
@@ -147,7 +153,7 @@
                       {% if item.product.stock <= 5 and item.product.stock > 0 %}
                         <p class="text-xs text-orange-600 mt-2">⚠️ Only {{ item.product.stock }} left in stock</p>
                       {% elif item.product.stock == 0 %}
-                        <p class="text-xs text-red-600 mt-2">❌ Out of stock</p>
+                        <p class="text-xs text-teal-600 mt-2">❌ Out of stock</p>
                       {% endif %}
                     </div>
                   {% endfor %}
@@ -163,13 +169,13 @@
                   <div class="space-y-2">
                     {% for address in user_addresses %}
                       <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                        <input type="radio" name="shipping_address" value="{{ address.address }}" checked class="w-4 h-4 text-red-600" onchange="updateAddress()">
+                        <input type="radio" name="shipping_address" value="{{ address.address }}" checked class="w-4 h-4 text-teal-600" onchange="updateAddress()">
                         <div class="ml-3 flex-1 min-w-0">
                           <p class="text-sm font-semibold text-gray-900">Saved Address</p>
                           <p class="text-xs text-gray-600">{{address}}</p>
                         </div>
                         <div class="ml-4 text-xs text-gray-500">    
-                          <button type="submit" class="text-red-600 hover:text-red-800 font-medium text-sm transition" value="{{address.address_id}}" onclick="delete_address(this.value)">
+                          <button type="submit" class="text-teal-600 hover:text-teal-800 font-medium text-sm transition" value="{{address.address_id}}" onclick="delete_address(this.value)">
                                 Remove
                           </button>
                         </div>
@@ -177,7 +183,7 @@
                     {% endfor %}
                     
                     <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input type="radio" name="shipping_address" value="custom" class="w-4 h-4 text-red-600" onchange="updateAddress()" 
+                      <input type="radio" name="shipping_address" value="custom" class="w-4 h-4 text-teal-600" onchange="updateAddress()" 
                       {% if user_addresses.count == 0 %} checked {% endif %}>
                       <div class="ml-3 flex-1 min-w-0">
                         <p class="text-sm font-semibold text-gray-900">Custom Shipping Address</p>
@@ -189,37 +195,37 @@
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
                           <input type="text" name="full_name" value="{{ user.get_full_name }}" id="full_name"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
                         </div>
 
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
                           <input type="tel" name="phone" value="{{ user.profile.phone_number }}" placeholder="+63 9XX XXX XXXX" id="phone"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
                         </div>
 
                         <div class="md:col-span-2">
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address *</label>
                           <input type="text" name="address" value="{{ user.profile.address }}" id="address"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
                         </div>
 
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
                           <input type="text" name="city" value="{{ user.profile.city }}" id="city"  
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
                         </div>
 
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Province *</label>
                           <input type="text" name="province" value="{{ user.profile.province }}" id="province"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
                         </div>
 
                         <div>
                           <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code *</label>
                           <input type="text" name="postal_code" value="{{ user.profile.postal_code }}" id="postal_code"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500" requiteal>
                         </div>
                         <div class="md:col-span-2 flex justify-end">
                         <button type="button" id="save_address_button" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 transition" onclick="save_address()">
@@ -263,7 +269,7 @@
                 <div class="mb-6">
                   <div class="flex justify-between items-center">
                     <span class="text-lg font-bold text-gray-900">Total</span>
-                    <span class="text-2xl font-bold text-red-600">₱<span id="total">{{ cart_total }}</span></span>
+                    <span class="text-2xl font-bold text-teal-600">₱<span id="total">{{ cart_total }}</span></span>
                   </div>
                 </div>
 
@@ -273,18 +279,18 @@
                   <div class="space-y-2">
 
                     <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input type="radio" name="shipping" value="lalamove" class="w-4 h-4 text-red-600" onchange="updateShipping()">
+                      <input type="radio" name="shipping" value="lalamove" class="w-4 h-4 text-teal-600" onchange="updateShipping()">
                       <div class="ml-3 flex-1 min-w-0">
                         <p class="text-sm font-semibold text-gray-900">Lalamove Delivery</p>
                         <p class="text-xs text-gray-600" id="lalamove-desc">Get Quote</p>
                       </div>
-                      <button type="button" id="getQuoteBtn" class="ml-2 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition" onclick="getLalamoveQuote()" style="display:none;">
+                      <button type="button" id="getQuoteBtn" class="ml-2 px-3 py-1 bg-teal-500 text-white text-xs rounded hover:bg-teal-600 transition" onclick="getLalamoveQuote()" style="display:none;">
                         Get Quote
                       </button>
                     </label>
 
                     <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input type="radio" name="shipping" value="pickup" class="w-4 h-4 text-red-600" onchange="updateShipping()" checked>
+                      <input type="radio" name="shipping" value="pickup" class="w-4 h-4 text-teal-600" onchange="updateShipping()" checked>
                       <div class="ml-3 flex-1 min-w-0">
                         <p class="text-sm font-semibold text-gray-900">Pick-up</p>
                         <p class="text-xs text-gray-600">Free</p>
@@ -298,7 +304,7 @@
                   <h3 class="font-bold text-gray-900 mb-3 text-sm">Payment Method</h3>
                   <div class="space-y-2">
                     <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input type="radio" name="payment" value="cod" checked class="w-4 h-4 text-red-600">
+                      <input type="radio" name="payment" value="cod" checked class="w-4 h-4 text-teal-600">
                       <div class="ml-3">
                         <p class="text-sm font-semibold text-gray-900">Cash on Pick-up/Delivery</p>
                         <p class="text-xs text-gray-600">Pay when you receive</p>
@@ -306,7 +312,7 @@
                     </label>
 
                     <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                      <input type="radio" name="payment" value="card" class="w-4 h-4 text-red-600">
+                      <input type="radio" name="payment" value="card" class="w-4 h-4 text-teal-600">
                       <div class="ml-3">
                         <p class="text-sm font-semibold text-gray-900">Xendit</p>
                         <p class="text-xs text-gray-600">Visa, Mastercard, Amex, and E-Wallets</p>
@@ -319,7 +325,7 @@
                   <input type="hidden" name="shipping" id="shipping_method" value="pickup">
                   <input type="hidden" name="payment" id="payment_method" value="cod">
                   <input type="hidden" name="lalamove_quote_id" id="lalamove_quote_id" value="">
-                  <button type="button" id="checkout_button" onclick="checkout()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors">
+                  <button type="button" id="checkout_button" onclick="checkout()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-lg hover:bg-teal-700 transition-colors">
                     Place Order
                   </button>
                 </form>
@@ -329,7 +335,7 @@
                 </a>
 
                 <p class="text-xs text-gray-500 text-center mt-4">
-                  🔒 Secure checkout powered by encryption
+                  🔒 Secure checkout poweteal by encryption
                 </p>
               </div>
             </div>
@@ -344,7 +350,7 @@
             </div>
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
             <p class="text-gray-600 mb-6">Looks like you haven't added any products yet. Start exploring!</p>
-            <a href="{% url 'product_list' %}" class="inline-block bg-red-600 text-white font-bold py-3 px-8 rounded-md hover:bg-red-700 transition-colors">
+            <a href="{% url 'product_list' %}" class="inline-block bg-teal-600 text-white font-bold py-3 px-8 rounded-md hover:bg-teal-700 transition-colors">
               Start Shopping
             </a>
           </div>
@@ -352,15 +358,15 @@
 
       {% else %}
         <div class="bg-white rounded-lg shadow-md p-12 text-center">
-          <div class="inline-block bg-red-100 rounded-full p-6 mb-4">
-            <svg class="w-16 h-16 text-red-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="inline-block bg-teal-100 rounded-full p-6 mb-4">
+            <svg class="w-16 h-16 text-teal-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
             </svg>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">Login Required</h2>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Login Requiteal</h2>
           <p class="text-gray-600 mb-6">You need to login to access your shopping cart. Create an account or login to continue shopping.</p>
           <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="{% url 'login' %}" class="inline-block bg-red-600 text-white font-bold py-3 px-8 rounded-md hover:bg-red-700 transition-colors">
+            <a href="{% url 'login' %}" class="inline-block bg-teal-600 text-white font-bold py-3 px-8 rounded-md hover:bg-teal-700 transition-colors">
               Login
             </a>
             <a href="{% url 'register' %}" class="inline-block bg-gray-600 text-white font-bold py-3 px-8 rounded-md hover:bg-gray-700 transition-colors">
@@ -371,57 +377,62 @@
       {% endif %}
     </div>
   </main>
-  <footer class="bg-red-700 text-gray-100 py-12 mt-12">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-        <div>
-          <h3 class="text-white font-bold text-lg mb-4">About Us</h3>
-          <p class="text-sm text-gray-200">TUP Marketplace is your go-to platform for buying and selling quality products on campus.</p>
-        </div>
-
-        <div>
-          <h3 class="text-white font-bold text-lg mb-4">Quick Links</h3>
-          <ul class="space-y-2 text-sm">
-            <li><a href="{% url 'homepage' %}" class="text-gray-200 hover:text-yellow-300 transition">Home</a></li>
-            <li><a href="{% url 'product_list' %}" class="text-gray-200 hover:text-yellow-300 transition">Shop</a></li>
-            <li><a href="{% url 'cart' %}" class="text-gray-200 hover:text-yellow-300 transition">Cart</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 class="text-white font-bold text-lg mb-4">Support</h3>
-          <ul class="space-y-2 text-sm">
-            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Contact Us</a></li>
-            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">FAQ</a></li>
-            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Shipping Info</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 class="text-white font-bold text-lg mb-4">Follow Us</h3>
-          <div class="flex space-x-4">
-            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Facebook</a>
-            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Twitter</a>
-            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Instagram</a>
+  <footer class="mt-0 bg-gray-900 py-12 text-gray-300">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- About -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">About Us</h3>
+            <p class="text-sm text-gray-400">New Earth Tech is your go-to platform for buying and selling quality products on campus.</p>
+          </div>
+          <!-- Quick Links -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="{% url 'homepage' %}" class="text-gray-400 transition hover:text-teal-400">Home</a></li>
+              <li><a href="{% url 'product_list' %}" class="text-gray-400 transition hover:text-teal-400">Shop</a></li>
+              <li><a href="{% url 'cart' %}" class="text-gray-400 transition hover:text-teal-400">Cart</a></li>
+            </ul>
+          </div>
+          <!-- Customer Service -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Support</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Contact Us</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">FAQ</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Shipping Info</a></li>
+            </ul>
+          </div>
+          <!-- Follow Us -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Follow Us</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+               Facebook
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+                Tiktok
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+              Instagram</span>
+              </a>
+            </div>
           </div>
         </div>
+        <!-- Divider -->
+        <div class="border-t border-gray-800 pt-8">
+          <p class="text-center text-sm text-gray-400">© 2025 New Earth Tech. All rights reserved.</p>
+        </div>
       </div>
-
-      <div class="border-t border-red-600 pt-8">
-        <p class="text-center text-gray-200 text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
+    </footer>
 </body>
 
+  <script src="{% static 'shop/js/menu.js' %}"></script>
 
   {{ clean_addresses | json_script:"user-addresses-data" }}
-
+  
   <script>
-    // Mobile Menu Toggle
-    const menuBtn = document.getElementById('menuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-
+    
     // Shipping Address Inputs
     const saveAddressButton = document.getElementById('save_address_button');
     const fullNameInput = document.getElementById('full_name');
@@ -442,24 +453,12 @@
 
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    // Event Listeners
-    menuBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
+    
 
     document.querySelectorAll('input[name="payment"]').forEach(radio => {
       radio.addEventListener('change', function() {
         paymentMethod.value = this.value;
       });
-    });
-
-    const menuLinks = mobileMenu.querySelectorAll('a');
-    menuLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenu.classList.add('hidden');
-      });
-    });
-
 
     // On page load, check if Lalamove is selected
     if (initselectedShipping === 'lalamove') {
@@ -502,7 +501,7 @@
       })
       .catch(error => {
         console.error('Network error:', error);
-        alert('A network error occurred while saving the address.');
+        alert('A network error occurteal while saving the address.');
       });
     }
 
@@ -584,7 +583,7 @@
         lalamoveText.textContent = 'Click button to get quote';
         totalDisplay.textContent = 'TBD';
         getQuoteBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
-        getQuoteBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+        getQuoteBtn.classList.add('bg-teal-500', 'hover:bg-teal-600');
         getQuoteBtn.textContent = 'Get Quote';
         getQuoteBtn.disabled = false;  
         checkoutBtn.disabled = true;
@@ -638,7 +637,7 @@
           document.getElementById('lalamove_quote_id').value = data.quoteId;
           getQuoteBtn.textContent = 'Quote Received ✓';
           getQuoteBtn.classList.add('bg-green-500', 'hover:bg-green-600');
-          getQuoteBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+          getQuoteBtn.classList.remove('bg-teal-500', 'hover:bg-teal-600');
           checkoutBtn.disabled = false;
           try{
           checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -654,7 +653,7 @@
       })
       .catch(error => {
         console.error('Network error:', error);
-        alert('A network error occurred while fetching the quote.');
+        alert('A network error occurteal while fetching the quote.');
         getQuoteBtn.disabled = false;
         getQuoteBtn.textContent = 'Get Quote';
       });
@@ -687,7 +686,7 @@
     })
     .catch(error => {
         console.error('AJAX Network Error:', error);
-        alert('A network error occurred while deleting the address.');
+        alert('A network error occurteal while deleting the address.');
     });
 }
 
@@ -737,13 +736,13 @@ function checkout() {
             console.log(data);
             
             // 💡 CRITICAL: Handle success based on payment type
-            if (data.redirect_url) {
-                // Case 1: Online Payment (Xendit) - Redirect to the payment gateway
-                window.location.href = data.redirect_url;
+            if (data.tealirect_url) {
+                // Case 1: Online Payment (Xendit) - tealirect to the payment gateway
+                window.location.href = data.tealirect_url;
                 
             } else if (data.order_id) {
-                // Case 2: Cash On Pickup (COP) - Redirect to order confirmation page
-                alert('Order placed successfully! Redirecting to confirmation page.');
+                // Case 2: Cash On Pickup (COP) - tealirect to order confirmation page
+                alert('Order placed successfully! tealirecting to confirmation page.');
                 // Note: Replaces '0' placeholder with the actual order ID
                console.log(data.payment_url)
             
@@ -761,7 +760,7 @@ function checkout() {
         // Network failure
         if (submitButton) submitButton.disabled = false;
         console.error('Network error:', error);
-        alert(`A network or server error occurred: ${error.message}`);
+        alert(`A network or server error occurteal: ${error.message}`);
     });
 }
 
@@ -801,7 +800,7 @@ function checkout() {
     })
     .catch(error => {
         console.error('AJAX Error:', error);
-        alert(`A network error occurred: ${error.message}`);
+        alert(`A network error occurteal: ${error.message}`);
     });
 }
           

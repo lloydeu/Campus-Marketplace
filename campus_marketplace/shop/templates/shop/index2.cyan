@@ -36,7 +36,7 @@
           </form>
         </div>
         <!-- Nav links (Right) - Hidden on Mobile -->
-        <nav class="hidden flex-shrink-0 gap-4 whitespace-nowrap items-center text-gray-700 lg:flex">
+        <nav class="hidden flex-shrink-0 gap-6 whitespace-nowrap text-gray-700 lg:flex">
           <a href="{% url 'homepage' %}" class="font-medium transition hover:text-teal-600">Home</a>
           <a href="{% url 'product_list' %}" class="font-medium transition hover:text-teal-600">Products</a>
           <a href="{% url 'cart' %}" class="font-medium transition hover:text-teal-600">Cart</a>
@@ -49,8 +49,8 @@
           <a href="{% url 'profile' %}" class="font-medium transition hover:text-teal-600">Profile</a>
           <a href="{% url 'logout' %}" class="font-medium transition hover:text-teal-600">Logout</a>
           {% else %}
-          <a href="{% url 'login' %}" class="font-medium transition hover:text-teal-600">Login</a>
-          <a href="{% url 'register' %}" class="font-medium transition hover:text-teal-600">Register</a>
+          <a href="{% url 'login' %}" class="rounded-lg bg-teal-600 px-4 py-2 font-medium text-white transition hover:bg-teal-700">Login</a>
+          <a href="{% url 'register' %}" class="rounded-lg border-2 border-teal-600 px-4 py-2 font-medium text-teal-600 transition hover:bg-teal-50">Register</a>
           {% endif %}
         </nav>
       </div>
@@ -68,11 +68,6 @@
           <a href="{% url 'product_list' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Products</a>
           <a href="{% url 'cart' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Cart</a>
           {% if user.is_authenticated %}
-          <a href="{% url 'messages_inbox' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">
-            Messages {% if user.is_authenticated %} {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %} {% if unread_count > 0 %}
-            <span class="ml-2 inline-block rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"> {{ unread_count }} </span>
-            {% endif %} {% endwith %} {% endif %}
-          <a/>
           <a href="{% url 'profile' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Profile</a>
           <a href="{% url 'logout' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Logout</a>
           {% else %}
@@ -85,28 +80,48 @@
 
     <main>
       <!-- Enhanced Hero Banner with Overlay -->
-      <section class="relative mx-auto my-6 aspect-video max-w-4xl overflow-hidden rounded-lg bg-center">
-        <div class="absolute inset-0 flex transition-opacity duration-1000" id="slideshow">
-          <a href="{% url 'register' %}" class="slide absolute inset-0 cursor-pointer bg-cover bg-center opacity-100 transition-opacity duration-1000" style="background-image: url('{% static 'shop/images/banner1.jpg' %}');"></a>
-          <a href="{% url 'product_list' %}" class="slide absolute inset-0 cursor-pointer bg-cover bg-center opacity-0 transition-opacity duration-1000" style="background-image: url('{% static 'shop/images/banner2.jpg' %}');"></a>
-          <a href="{% url 'login' %}" class="slide absolute inset-0 cursor-pointer bg-cover bg-center opacity-0 transition-opacity duration-1000" style="background-image: url('{% static 'shop/images/banner3.jpg' %}');"></a>
+      <section class="relative mx-auto my-8 max-w-7xl overflow-hidden rounded-2xl shadow-2xl">
+        <div class="aspect-[21/9] w-full">
+          <div class="absolute inset-0 flex transition-opacity duration-1000" id="slideshow">
+            <a href="{% url 'register' %}" class="slide absolute inset-0 cursor-pointer bg-cover bg-center opacity-100 transition-opacity duration-1000" style="background-image: url('{% static 'shop/images/banner1.jpg' %}');"></a>
+            <a href="{% url 'product_list' %}" class="slide absolute inset-0 cursor-pointer bg-cover bg-center opacity-0 transition-opacity duration-1000" style="background-image: url('{% static 'shop/images/banner2.jpg' %}');"></a>
+            <a href="{% url 'login' %}" class="slide absolute inset-0 cursor-pointer bg-cover bg-center opacity-0 transition-opacity duration-1000" style="background-image: url('{% static 'shop/images/banner3.jpg' %}');"></a>
+          </div>
+          <!-- Gradient Overlay -->
+          <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+          
+          <!-- Hero Content -->
+          <div class="absolute inset-0 flex flex-col items-start justify-center px-8 md:px-16">
+            <h2 class="mb-4 max-w-2xl text-3xl font-bold text-white drop-shadow-lg md:text-5xl lg:text-6xl">
+              Your Campus Marketplace
+            </h2>
+            <p class="mb-6 max-w-xl text-lg text-gray-100 drop-shadow-md md:text-xl">
+              Buy, sell, and trade with fellow students. Sustainable shopping made easy.
+            </p>
+            <a href="{% url 'product_list' %}" class="rounded-lg bg-teal-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition hover:bg-teal-700 hover:shadow-xl">
+              Start Shopping
+            </a>
+          </div>
+
+          <!-- Slide Navigation Dots -->
+          <div class="absolute bottom-6 left-1/2 flex -translate-x-1/2 transform space-x-3">
+            <button class="slide-btn h-3 w-3 rounded-full bg-white shadow-lg opacity-100 transition-all hover:scale-125" data-slide="0"></button>
+            <button class="slide-btn h-3 w-3 rounded-full bg-white shadow-lg opacity-50 transition-all hover:scale-125" data-slide="1"></button>
+            <button class="slide-btn h-3 w-3 rounded-full bg-white shadow-lg opacity-50 transition-all hover:scale-125" data-slide="2"></button>
+          </div>
+
+          <!-- Arrow Navigation -->
+          <button id="prevSlide" class="absolute left-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white/80 p-3 text-gray-800 shadow-lg transition-all hover:bg-white hover:scale-110">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <button id="nextSlide" class="absolute right-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white/80 p-3 text-gray-800 shadow-lg transition-all hover:bg-white hover:scale-110">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
         </div>
-        <div class="pointer-events-none absolute inset-0 bg-black bg-opacity-10"></div>
-        <div class="absolute bottom-8 left-1/2 flex -translate-x-1/2 transform space-x-3">
-          <button class="slide-btn h-3 w-3 rounded-full bg-white opacity-100 transition-opacity" data-slide="0"></button>
-          <button class="slide-btn h-3 w-3 rounded-full bg-white opacity-50 transition-opacity" data-slide="1"></button>
-          <button class="slide-btn h-3 w-3 rounded-full bg-white opacity-50 transition-opacity" data-slide="2"></button>
-        </div>
-        <button id="prevSlide" class="absolute left-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white bg-opacity-50 p-3 text-black transition-all hover:bg-opacity-75">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-        </button>
-        <button id="nextSlide" class="absolute right-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white bg-opacity-50 p-3 text-black transition-all hover:bg-opacity-75">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </button>
       </section>
 
       <!-- Categories Section -->
@@ -144,7 +159,7 @@
         <div class="mx-auto max-w-7xl px-4">
           <div class="mb-12 text-center">
             <h2 class="mb-3 text-4xl font-bold text-gray-900">Latest Products</h2>
-            <p class="text-lg text-gray-600">Fresh listings from fellow students</p>
+            <p class="text-lg text-gray-600">Fresh listings from your fellow students</p>
           </div>
           
           <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
@@ -215,8 +230,23 @@
     </main>
 
     <script src="{% static 'shop/js/slideshow.js' %}"></script>
-    <script src="{% static 'shop/js/menu.js' %}"></script>
-    
+    <script>
+      // Mobile menu toggle
+      const menuBtn = document.getElementById('menuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      
+      menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+      
+      // Close menu when a link is clicked
+      const menuLinks = mobileMenu.querySelectorAll('a');
+      menuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+        });
+      });
+    </script>
 
     <footer class="mt-0 bg-gray-900 py-12 text-gray-300">
       <div class="mx-auto max-w-7xl px-4">
@@ -249,13 +279,13 @@
             <h3 class="mb-4 text-lg font-bold text-white">Follow Us</h3>
             <div class="flex space-x-4">
               <a href="#" class="text-gray-400 transition hover:text-teal-400">
-               Facebook
+                <span class="text-2xl">📘</span>
               </a>
               <a href="#" class="text-gray-400 transition hover:text-teal-400">
-                Tiktok
+                <span class="text-2xl">🐦</span>
               </a>
               <a href="#" class="text-gray-400 transition hover:text-teal-400">
-              Instagram</span>
+                <span class="text-2xl">📷</span>
               </a>
             </div>
           </div>

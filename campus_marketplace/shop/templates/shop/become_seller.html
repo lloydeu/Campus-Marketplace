@@ -4,66 +4,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Become a Seller - TUP Marketplace</title>
+  <title>Become a Seller - New Earth Tech</title>
   <link rel="stylesheet" href="{% static 'shop/css/styles.css' %}">
 </head>
 
 <body>
   <!-- Header -->
-  <header class="bg-red-600 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3 flex-shrink-0">
-        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
-          <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto"> 
-          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
-        </a>
+  <header class="bg-white/95 backdrop-blur-sm shadow-md">
+      <!-- Top Bar -->
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <!-- Logo and Title (Left) -->
+        <div class="flex flex-shrink-0 items-center gap-3">
+          <a href="{% url 'homepage' %}" class="flex items-center gap-3 transition hover:opacity-80">
+            <img src="{% static 'shop/images/logo.png' %}" alt="New Earth Tech Logo" class="h-16 w-auto drop-shadow-md" />
+            <div>
+              <h1 class="text-xl font-bold text-gray-800">New Earth Tech</h1>
+              <p class="text-xs text-teal-600">University Marketplace</p>
+            </div>
+          </a>
+        </div>
+        <!-- Hamburger Menu Button -->
+        <button id="menuBtn" class="flex-shrink-0 rounded-md p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <!-- Search Bar (Center) - Hidden on Mobile -->
+        <div class="hidden max-w-2xl flex-1 md:flex">
+          <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+            <input type="text" name="q" placeholder="Search products..." class="min-w-0 flex-1 rounded-l-lg border-2 border-r-0 border-teal-500 bg-white px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500" />
+            <button type="submit" class="flex-shrink-0 rounded-r-lg bg-teal-600 px-8 py-3 font-semibold text-white transition hover:bg-teal-700">Search</button>
+          </form>
+        </div>
+        <!-- Nav links (Right) - Hidden on Mobile -->
+        <nav class="hidden flex-shrink-0 gap-4 whitespace-nowrap items-center text-gray-700 lg:flex">
+          <a href="{% url 'homepage' %}" class="font-medium transition hover:text-teal-600">Home</a>
+          <a href="{% url 'product_list' %}" class="font-medium transition hover:text-teal-600">Products</a>
+          <a href="{% url 'cart' %}" class="font-medium transition hover:text-teal-600">Cart</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'messages_inbox' %}" class="flex items-center gap-2 font-medium transition hover:text-teal-600">
+          Messages {% if user.is_authenticated %} {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %} {% if unread_count > 0 %}
+          <span class="rounded-full bg-teal-500 px-2 py-1 text-xs font-bold text-white"> {{ unread_count }} </span>
+          {% endif %} {% endwith %} {% endif %}
+          </a>
+          <a href="{% url 'profile' %}" class="font-medium transition hover:text-teal-600">Profile</a>
+          <a href="{% url 'logout' %}" class="font-medium transition hover:text-teal-600">Logout</a>
+          {% else %}
+          <a href="{% url 'login' %}" class="font-medium transition hover:text-teal-600">Login</a>
+          <a href="{% url 'register' %}" class="font-medium transition hover:text-teal-600">Register</a>
+          {% endif %}
+        </nav>
       </div>
-      
-      <button id="menuBtn" class="lg:hidden flex-shrink-0 p-2 hover:bg-red-700 rounded-md transition">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
-
-      <nav class="hidden lg:flex gap-6 whitespace-nowrap flex-shrink-0">
-        <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
-        <a href="{% url 'product_list' %}" class="hover:text-gray-300">Products</a>
-        <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
-          <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
-        {% else %}
-          <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
-        {% endif %}
+      <!-- Mobile Search Bar -->
+      <div class="px-4 pb-3 md:hidden">
+        <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+          <input type="text" name="q" placeholder="Search products..." class="min-w-0 flex-1 rounded-l-lg border-2 border-r-0 border-teal-500 px-4 py-3 text-gray-800 focus:outline-none" />
+          <button type="submit" class="rounded-r-lg bg-teal-600 px-6 py-3 font-semibold text-white hover:bg-teal-700">Go</button>
+        </form>
+      </div>
+      <!-- Mobile Menu -->
+      <nav id="mobileMenu" class="hidden border-t border-gray-200 bg-white md:hidden">
+        <div class="mx-auto max-w-7xl space-y-1 px-4 py-2">
+          <a href="{% url 'homepage' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Home</a>
+          <a href="{% url 'product_list' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Products</a>
+          <a href="{% url 'cart' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Cart</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Profile</a>
+          <a href="{% url 'logout' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Logout</a>
+          {% else %}
+          <a href="{% url 'login' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Login</a>
+          <a href="{% url 'register' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Register</a>
+          {% endif %}
+        </div>
       </nav>
-    </div>
-
-    <nav id="mobileMenu" class="hidden md:hidden bg-red-700 border-t border-red-500">
-      <div class="max-w-7xl mx-auto px-4 py-2 space-y-1">
-        <a href="{% url 'homepage' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Home</a>
-        <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Products</a>
-        <a href="{% url 'cart' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Cart</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Profile</a>
-          <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Logout</a>
-        {% else %}
-          <a href="{% url 'login' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Login</a>
-        {% endif %}
-      </div>
-    </nav>
-  </header>
+    </header>
 
   <main class="bg-gray-50 py-8 md:py-12">
     <div class="max-w-4xl mx-auto px-4">
       <!-- Hero Section -->
       <div class="bg-white rounded-lg shadow-md p-8 mb-8 text-center">
-        <div class="inline-block bg-red-100 rounded-full p-6 mb-4">
-          <svg class="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="inline-block bg-teal-100 rounded-full p-6 mb-4">
+          <svg class="w-16 h-16 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
           </svg>
         </div>
         <h1 class="text-4xl font-bold text-gray-900 mb-4">Start Your Selling Journey</h1>
-        <p class="text-xl text-gray-600 mb-2">Join thousands of successful sellers on TUP Marketplace</p>
+        <p class="text-xl text-gray-600 mb-2">Join thousands of successful sellers on New Earth Tech</p>
         <p class="text-gray-600">Reach customers, grow your business, and earn money</p>
       </div>
 
@@ -76,7 +102,7 @@
             <!-- Benefit 1 -->
             <div class="flex gap-4">
               <div class="flex-shrink-0">
-                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-red-600 text-white">
+                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-teal-600 text-white">
                   <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
@@ -91,7 +117,7 @@
             <!-- Benefit 2 -->
             <div class="flex gap-4">
               <div class="flex-shrink-0">
-                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-red-600 text-white">
+                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-teal-600 text-white">
                   <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5-4.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path>
                   </svg>
@@ -106,7 +132,7 @@
             <!-- Benefit 3 -->
             <div class="flex gap-4">
               <div class="flex-shrink-0">
-                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-red-600 text-white">
+                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-teal-600 text-white">
                   <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                   </svg>
@@ -121,7 +147,7 @@
             <!-- Benefit 4 -->
             <div class="flex gap-4">
               <div class="flex-shrink-0">
-                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-red-600 text-white">
+                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-teal-600 text-white">
                   <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
@@ -142,7 +168,7 @@
 
             {% if messages %}
               {% for message in messages %}
-                <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+                <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-teal-100 text-teal-800{% else %}bg-green-100 text-green-800{% endif %}">
                   {{ message }}
                 </div>
               {% endfor %}
@@ -157,8 +183,8 @@
                   Shop Name <span class="text-red-600">*</span>
                 </label>
                 <input type="text" name="shop_name" placeholder="e.g., Tech Hub, Fashion Plus, etc." 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                       required minlength="3" maxlength="200">
+                       class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                       requiteal minlength="3" maxlength="200">
                 <p class="text-xs text-gray-500 mt-1">Minimum 3 characters - This will be your shop's name</p>
               </div>
 
@@ -168,24 +194,24 @@
                   Shop Description <span class="text-red-600">*</span>
                 </label>
                 <textarea name="shop_description" placeholder="Describe your shop, products, and what makes you unique..." 
-                          class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                          rows="5" required minlength="10"></textarea>
+                          class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          rows="5" requiteal minlength="10"></textarea>
                 <p class="text-xs text-gray-500 mt-1">Minimum 10 characters - Help customers learn about your shop</p>
               </div>
 
               <!-- Terms -->
               <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <label class="flex items-start gap-3">
-                  <input type="checkbox" name="agree_terms" required class="mt-1 w-4 h-4 text-red-600 rounded focus:ring-2 focus:ring-red-500">
+                  <input type="checkbox" name="agree_terms" requiteal class="mt-1 w-4 h-4 text-teal-600 rounded focus:ring-2 focus:ring-teal-500">
                   <span class="text-sm text-gray-700">
-                    I agree to TUP Marketplace's Seller Terms & Conditions and understand my responsibilities as a seller
+                    I agree to New Earth Tech's Seller Terms & Conditions and understand my responsibilities as a seller
                   </span>
                 </label>
               </div>
 
               <!-- Buttons -->
               <div class="flex gap-4">
-                <button type="submit" class="flex-1 bg-red-600 text-white font-bold py-3 rounded-md hover:bg-red-700 transition-colors">
+                <button type="submit" class="flex-1 bg-teal-600 text-white font-bold py-3 rounded-md hover:bg-teal-700 transition-colors">
                   🚀 Become a Seller
                 </button>
                 <a href="{% url 'profile' %}" class="flex-1 text-center bg-gray-600 text-white font-bold py-3 rounded-md hover:bg-gray-700 transition-colors">
@@ -210,24 +236,55 @@
     </div>
   </main>
 
-  <script>
-    const menuBtn = document.getElementById('menuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    menuBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
-    const menuLinks = mobileMenu.querySelectorAll('a');
-    menuLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenu.classList.add('hidden');
-      });
-    });
-  </script>
+  <script src="{% static 'shop/js/menu.js' %}"></script>
 
-  <footer class="bg-red-700 text-gray-100 py-12 mt-12">
-    <div class="max-w-7xl mx-auto px-4">
-      <p class="text-center text-gray-200 text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
-    </div>
-  </footer>
+  <footer class="mt-0 bg-gray-900 py-12 text-gray-300">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- About -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">About Us</h3>
+            <p class="text-sm text-gray-400">New Earth Tech is your go-to platform for buying and selling quality products on campus.</p>
+          </div>
+          <!-- Quick Links -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="{% url 'homepage' %}" class="text-gray-400 transition hover:text-teal-400">Home</a></li>
+              <li><a href="{% url 'product_list' %}" class="text-gray-400 transition hover:text-teal-400">Shop</a></li>
+              <li><a href="{% url 'cart' %}" class="text-gray-400 transition hover:text-teal-400">Cart</a></li>
+            </ul>
+          </div>
+          <!-- Customer Service -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Support</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Contact Us</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">FAQ</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Shipping Info</a></li>
+            </ul>
+          </div>
+          <!-- Follow Us -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Follow Us</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+               Facebook
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+                Tiktok
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+              Instagram</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Divider -->
+        <div class="border-t border-gray-800 pt-8">
+          <p class="text-center text-sm text-gray-400">© 2025 New Earth Tech. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
 </body>
 </html>

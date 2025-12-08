@@ -4,21 +4,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Status - TUP Marketplace</title>
+  <title>Payment Status - New Earth Tech</title>
   <link rel="stylesheet" href="{% static 'shop/css/styles.css' %}">
 </head>
 
 <body class="bg-gray-100 min-h-screen flex flex-col">
-  <header class="bg-red-600 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3 flex-shrink-0">
-        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
-          <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto">
-          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
-        </a>
-      </div>
+  <header class="bg-white/95 backdrop-blur-sm shadow-md">
+      <!-- Top Bar -->
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <!-- Logo and Title (Left) -->
+        <div class="flex flex-shrink-0 items-center gap-3">
+          <a href="{% url 'homepage' %}" class="flex items-center gap-3 transition hover:opacity-80">
+            <img src="{% static 'shop/images/logo.png' %}" alt="New Earth Tech Logo" class="h-16 w-auto drop-shadow-md" />
+            <div>
+              <h1 class="text-xl font-bold text-gray-800">New Earth Tech</h1>
+              <p class="text-xs text-teal-600">University Marketplace</p>
+            </div>
+          </a>
+        </div>
       </div>
   </header>
+
 
   <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     {% csrf_token %}
@@ -63,27 +69,53 @@
     </div>
   </main>
 
-  <footer class="bg-gray-800 text-white mt-auto">
-    <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div>
-          <h3 class="font-bold text-lg mb-4">Quick Links</h3>
-          <ul class="space-y-2 text-sm">
-            <li><a href="{% url 'homepage' %}" class="text-gray-200 hover:text-red-300 transition">Home</a></li>
-            <li><a href="{% url 'product_list' %}" class="text-gray-200 hover:text-red-300 transition">Shop</a></li>
-            <li><a href="{% url 'cart' %}" class="text-gray-200 hover:text-red-300 transition">Cart</a></li>
-          </ul>
+  <footer class="mt-0 bg-gray-900 py-12 text-gray-300">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- About -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">About Us</h3>
+            <p class="text-sm text-gray-400">New Earth Tech is your go-to platform for buying and selling quality products on campus.</p>
+          </div>
+          <!-- Quick Links -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="{% url 'homepage' %}" class="text-gray-400 transition hover:text-teal-400">Home</a></li>
+              <li><a href="{% url 'product_list' %}" class="text-gray-400 transition hover:text-teal-400">Shop</a></li>
+              <li><a href="{% url 'cart' %}" class="text-gray-400 transition hover:text-teal-400">Cart</a></li>
+            </ul>
+          </div>
+          <!-- Customer Service -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Support</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Contact Us</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">FAQ</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Shipping Info</a></li>
+            </ul>
+          </div>
+          <!-- Follow Us -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Follow Us</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+               Facebook
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+                Tiktok
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+              Instagram</span>
+              </a>
+            </div>
+          </div>
         </div>
-        <div>
-          <h3 class="font-bold text-lg mb-4">Support</h3>
-          <ul class="space-y-2 text-sm">
-            <li><a href="#" class="text-gray-200 hover:text-red-300 transition">Contact Us</a></li>
-            <li><a href="#" class="text-gray-200 hover:text-red-300 transition">FAQ</a></li>
-          </ul>
+        <!-- Divider -->
+        <div class="border-t border-gray-800 pt-8">
+          <p class="text-center text-sm text-gray-400">© 2025 New Earth Tech. All rights reserved.</p>
         </div>
-        </div>
-    <div class="bg-gray-900 py-3 text-center text-sm">
-      &copy; {% now "Y" %} TUP Marketplace. All rights reserved.
-    </div>
-  </footer>
+      </div>
+    </footer>
 </body>
 </html>

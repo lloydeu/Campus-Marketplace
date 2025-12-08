@@ -683,15 +683,15 @@ def seller_profile_settings(request):
         return redirect('profile')
     
     if request.method == 'POST':
-        from .forms import ProfileForm
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        from .forms import ShopProfileForm
+        form = ShopProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Shop settings updated successfully!')
             return redirect('seller_dashboard')
     else:
-        from .forms import ProfileForm
-        form = ProfileForm(instance=profile)
+        from .forms import ShopProfileForm
+        form = ShopProfileForm(instance=profile)
     
     context = {
         'form': form,

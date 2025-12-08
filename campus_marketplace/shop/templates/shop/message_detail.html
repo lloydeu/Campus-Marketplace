@@ -5,26 +5,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ message.subject }} - TUP Marketplace</title>
+  <title>{{ message.subject }} - New Earth Tech</title>
   <link rel="stylesheet" href="{% static 'shop/css/styles.css' %}">
 </head>
 
 <body class="bg-gray-50">
-  <header class="bg-red-600 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80">
-          <img src="{% static 'shop/images/logo.png' %}" alt="Logo" class="h-20 w-auto">
-          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
-        </a>
-      </div>
-      <nav class="hidden lg:flex gap-6">
-        <a href="{% url 'messages_inbox' %}" class="hover:text-gray-300">Back to Messages</a>
-        <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
-      </nav>
-    </div>
-  </header>
+  <header class="bg-white/95 backdrop-blur-sm shadow-md">
+      <!-- Top Bar -->
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <!-- Logo and Title (Left) -->
+        <div class="flex flex-shrink-0 items-center gap-3">
+          <a href="{% url 'homepage' %}" class="flex items-center gap-3 transition hover:opacity-80">
+            <img src="{% static 'shop/images/logo.png' %}" alt="New Earth Tech Logo" class="h-16 w-auto drop-shadow-md" />
+            <div>
+              <h1 class="text-xl font-bold text-gray-800">New Earth Tech</h1>
+              <p class="text-xs text-teal-600">University Marketplace</p>
+            </div>
+          </a>
+        </div>
+        <!-- Nav links (Right) - Hidden on Mobile -->
+        <nav class="hidden flex-shrink-0 gap-4 whitespace-nowrap items-center text-gray-700 lg:flex">
+          <a href="{% url 'messages_inbox'%}" class="font-medium transition text-red-600">Back to Messages</a>
+          <a href="{% url 'logout' %}" class="font-medium transition hover:text-teal-600">Logout</a>
+        
+        </nav>
+        <button id="menuBtn" class="flex-shrink-0 rounded-md p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
 
+        <nav id="mobileMenu" class="hidden border-t border-gray-200 bg-white md:hidden">
+          <div class="mx-auto max-w-7xl space-y-1 px-4 py-2">
+            <a href="{% url 'homepage' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Home</a>
+            <a href="{% url 'product_list' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Products</a>
+            <a href="{% url 'cart' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Cart</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'messages_inbox' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">
+              Messages {% if user.is_authenticated %} {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %} {% if unread_count > 0 %}
+              <span class="ml-2 inline-block rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"> {{ unread_count }} </span>
+              {% endif %} {% endwith %} {% endif %}</a>
+            <a href="{% url 'profile' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Profile</a>
+            <a href="{% url 'logout' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Login</a>
+            <a href="{% url 'register' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Register</a>
+            {% endif %}
+          </div>
+        </nav>
+      </div>
+  </header>
   <main class="max-w-4xl mx-auto px-4 py-12">
     {% csrf_token %}
     <!-- Message Header -->
@@ -33,7 +63,7 @@
       
       <div class="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-red-600 text-white rounded-full flex items-center justify-center text-lg">
+          <div class="w-12 h-12 bg-teal-600 text-white rounded-full flex items-center justify-center text-lg">
             👤
           </div>
           <div>
@@ -43,7 +73,7 @@
         </div>
         
         {% if message.product %}
-          <a href="{% url 'product_detail' message.product.id %}" class="text-red-600 font-bold hover:underline">
+          <a href="{% url 'product_detail' message.product.id %}" class="text-teal-600 font-bold hover:underline">
             View Product →
           </a>
         {% endif %}
@@ -66,10 +96,10 @@
 
       <!-- Actions -->
       <div class="flex gap-3">
-        <a href="{% url 'reply_message' message.id %}" class="flex-1 bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 text-center transition-colors">
+        <a href="{% url 'reply_message' message.id %}" class="flex-1 bg-teal-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 text-center transition-colors">
           💬 Reply
         </a>
-        <a href="{% url 'delete_message' message.id %}" class="flex-1 bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 text-center transition-colors">
+        <a href="{% url 'delete_message' message.id %}" class="flex-1 bg-teal-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 text-center transition-colors">
           🗑️ Delete
         </a>
         <a href="{% url 'messages_inbox' %}" class="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 text-center">
@@ -79,8 +109,54 @@
     </div>
   </main>
 
-  <footer class="bg-red-700 text-gray-100 py-8 mt-12">
-    <p class="text-center text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
-  </footer>
+  <footer class="mt-0 bg-gray-900 py-12 text-gray-300">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- About -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">About Us</h3>
+            <p class="text-sm text-gray-400">New Earth Tech is your go-to platform for buying and selling quality products on campus.</p>
+          </div>
+          <!-- Quick Links -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="{% url 'homepage' %}" class="text-gray-400 transition hover:text-teal-400">Home</a></li>
+              <li><a href="{% url 'product_list' %}" class="text-gray-400 transition hover:text-teal-400">Shop</a></li>
+              <li><a href="{% url 'cart' %}" class="text-gray-400 transition hover:text-teal-400">Cart</a></li>
+            </ul>
+          </div>
+          <!-- Customer Service -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Support</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Contact Us</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">FAQ</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Shipping Info</a></li>
+            </ul>
+          </div>
+          <!-- Follow Us -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Follow Us</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+               Facebook
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+                Tiktok
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+              Instagram</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Divider -->
+        <div class="border-t border-gray-800 pt-8">
+          <p class="text-center text-sm text-gray-400">© 2025 New Earth Tech. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
 </body>
+<script src="{% static 'shop/js/menu.js' %}"></script>
 </html>

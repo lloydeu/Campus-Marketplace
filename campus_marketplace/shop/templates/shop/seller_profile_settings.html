@@ -10,24 +10,60 @@
 </head>
 
 <body class="bg-gray-50">
-  <header class="bg-red-600 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80">
-          <img src="{% static 'shop/images/logo.png' %}" alt="Logo" class="h-20 w-auto">
-          <h1 class="text-xl font-bold hidden sm:block">TUP Marketplace</h1>
-        </a>
+  <header class="bg-white/95 backdrop-blur-sm shadow-md">
+      <!-- Top Bar -->
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <!-- Logo and Title (Left) -->
+        <div class="flex flex-shrink-0 items-center gap-3">
+          <a href="{% url 'homepage' %}" class="flex items-center gap-3 transition hover:opacity-80">
+            <img src="{% static 'shop/images/logo.png' %}" alt="New Earth Tech Logo" class="h-16 w-auto drop-shadow-md" />
+            <div>
+              <h1 class="text-xl font-bold text-gray-800">New Earth Tech</h1>
+              <p class="text-xs text-teal-600">University Marketplace</p>
+            </div>
+          </a>
+        </div>
+        <!-- Nav links (Right) - Hidden on Mobile -->
+        <nav class="hidden flex-shrink-0 gap-4 whitespace-nowrap items-center text-gray-700 lg:flex">
+          <a href="{% url 'homepage' %}" class="font-medium transition hover:text-teal-600">Home</a>
+          <a href="{% url 'profile' %}" class="font-medium transition hover:text-teal-600">Profile</a>
+          <a href="{% url 'logout' %}" class="font-medium transition hover:text-teal-600">Logout</a>
+        </nav>
+
+        <button id="menuBtn" class="flex-shrink-0 rounded-md p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+
+        <nav id="mobileMenu" class="hidden border-t border-gray-200 bg-white md:hidden">
+          <div class="mx-auto max-w-7xl space-y-1 px-4 py-2">
+            <a href="{% url 'homepage' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Home</a>
+            <a href="{% url 'product_list' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Products</a>
+            <a href="{% url 'cart' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Cart</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'messages_inbox' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">
+              Messages {% if user.is_authenticated %} {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %} {% if unread_count > 0 %}
+              <span class="ml-2 inline-block rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"> {{ unread_count }} </span>
+              {% endif %} {% endwith %} {% endif %}</a>
+            <a href="{% url 'profile' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Profile</a>
+            <a href="{% url 'logout' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Login</a>
+            <a href="{% url 'register' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Register</a>
+            {% endif %}
+          </div>
+        </nav>
       </div>
-      <nav class="hidden lg:flex gap-6">
-        <a href="{% url 'seller_dashboard' %}" class="hover:text-gray-300">Dashboard</a>
-        <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
-      </nav>
-    </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold text-gray-900 mb-8">Shop Settings</h1>
+  <main class="max-w-7xl mx-auto px-4 py-12">
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Seller Dashboard</h1>
+      <p class="text-gray-600">Welcome back, {{ profile.shop_name }}!</p>
+    </div>
 
+    <!-- Messages -->
     {% if messages %}
       {% for message in messages %}
         <div class="mb-6 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
@@ -35,6 +71,29 @@
         </div>
       {% endfor %}
     {% endif %}
+
+    <!-- Navigation Tabs -->
+    <div class="mb-8 border-b border-gray-200">
+      <nav class="flex gap-8 overflow-x-auto">
+        <a href="{% url 'seller_dashboard' %}" class="pb-4 border-b-2 border-transparent text-gray-600 font-bold whitespace-nowrap">
+          📊 Dashboard
+        </a>
+        <a href="{% url 'seller_products' %}" class="pb-4 border-b-2 border-transparent text-gray-600 hover:text-gray-900 whitespace-nowrap">
+          📦 Products
+        </a>
+        <a href="{% url 'seller_orders' %}" class="pb-4 border-b-2 border-transparent text-gray-600 hover:text-gray-900 whitespace-nowrap">
+          📋 Orders
+        </a>
+        <a href="{% url 'seller_analytics' %}" class="pb-4 border-b-2 border-transparent text-gray-600 hover:text-gray-900 whitespace-nowrap">
+          📈 Analytics
+        </a>
+        <a href="{% url 'seller_profile_settings' %}" class="pb-4 border-b-2 border-red-600 text-red-600 hover:text-gray-900 whitespace-nowrap">
+          ⚙️ Settings
+        </a>
+      </nav>
+    </div>
+
+    <h1 class="text-4xl font-bold text-gray-900 mb-8">Shop Settings</h1>
 
     <form method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-8">
       {% csrf_token %}
@@ -60,13 +119,13 @@
       <!-- Avatar -->
       <div class="mb-6">
         <label class="block text-sm font-semibold text-gray-700 mb-2">Shop Avatar</label>
-        {% if profile.avatar %}
+        {% if profile.shop_logo %}
           <div class="mb-4">
             <img src="{{ profile.avatar.url }}" alt="Avatar" class="w-24 h-24 rounded-full object-cover">
           </div>
         {% endif %}
-        {{ form.avatar }}
-        {% if form.avatar.errors %}
+        {{ form.shop_logo }}
+        {% if form.shop_logo.errors %}
           <p class="text-red-600 text-sm mt-1">{{ form.avatar.errors }}</p>
         {% endif %}
       </div>
@@ -78,11 +137,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
-            {{ form.phone_number }}
+            {{ form.shop_phone_number }}
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Alternate Phone</label>
-            {{ form.alternate_phone }}
+            {{ form.shop_alternate_phone }}
           </div>
         </div>
       </div>
@@ -93,27 +152,27 @@
         
         <div class="mb-4">
           <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address</label>
-          {{ form.address }}
+          {{ form.shop_address }}
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">City</label>
-            {{ form.city }}
+            {{ form.shop_city }}
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Province</label>
-            {{ form.province }}
+            {{ form.shop_province }}
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code</label>
-            {{ form.postal_code }}
+            {{ form.shop_postal_code }}
           </div>
         </div>
 
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2">Country</label>
-          {{ form.country }}
+          {{ form.shop_country }}
         </div>
       </div>
 
@@ -134,7 +193,7 @@
 
       <!-- Buttons -->
       <div class="flex gap-4">
-        <button type="submit" class="flex-1 bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition">
+        <button type="submit" class="flex-1 bg-teal-600 text-white font-bold py-3 rounded-lg hover:bg-teal-700 transition">
           Save Settings
         </button>
         <a href="{% url 'seller_dashboard' %}" class="flex-1 text-center bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700">
@@ -144,9 +203,54 @@
     </form>
   </main>
 
-  <footer class="bg-red-700 text-gray-100 py-8 mt-12">
-    <p class="text-center text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
-  </footer>
+  <footer class="mt-0 bg-gray-900 py-12 text-gray-300">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- About -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">About Us</h3>
+            <p class="text-sm text-gray-400">New Earth Tech is your go-to platform for buying and selling quality products on campus.</p>
+          </div>
+          <!-- Quick Links -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="{% url 'homepage' %}" class="text-gray-400 transition hover:text-teal-400">Home</a></li>
+              <li><a href="{% url 'product_list' %}" class="text-gray-400 transition hover:text-teal-400">Shop</a></li>
+              <li><a href="{% url 'cart' %}" class="text-gray-400 transition hover:text-teal-400">Cart</a></li>
+            </ul>
+          </div>
+          <!-- Customer Service -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Support</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Contact Us</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">FAQ</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Shipping Info</a></li>
+            </ul>
+          </div>
+          <!-- Follow Us -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Follow Us</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+               Facebook
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+                Tiktok
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+              Instagram</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Divider -->
+        <div class="border-t border-gray-800 pt-8">
+          <p class="text-center text-sm text-gray-400">© 2025 New Earth Tech. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
 
   <style>
     input[type="text"],
@@ -173,9 +277,10 @@
 
     input[type="checkbox"] {
       w-4 h-4;
-      text-red-600 rounded focus:ring-2 focus:ring-red-500;
+      text-teal-600 rounded focus:ring-2 focus:ring-teal-500;
     }
     
   </style>
 </body>
+<script src="{% static 'shop/js/menu.js' %}"></script>
 </html>

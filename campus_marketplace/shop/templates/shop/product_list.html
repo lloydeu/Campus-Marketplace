@@ -3,83 +3,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Products - TUP Marketplace</title>
+  <title>Products - New Earth Tech</title>
   <link rel="stylesheet" href="{% static 'shop/css/styles.css' %}">
 </head>
 <body>
- <header class="bg-red-600 text-white shadow">
-    <!-- Top Bar -->
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <!-- Logo and Title (Left) -->
-      <div class="flex items-center gap-3 flex-shrink-0">
-        <a href="{% url 'homepage' %}" class="flex items-center gap-3 hover:opacity-80 transition">
-          <img src="{% static 'shop/images/logo.png' %}" alt="TUP Marketplace Logo" class="h-20 w-auto"> 
-          <h1 class="text-xl font-bold">TUP Marketplace</h1>
-        </a>
+ <header class="bg-white/95 backdrop-blur-sm shadow-md">
+      <!-- Top Bar -->
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <!-- Logo and Title (Left) -->
+        <div class="flex flex-shrink-0 items-center gap-3">
+          <a href="{% url 'homepage' %}" class="flex items-center gap-3 transition hover:opacity-80">
+            <img src="{% static 'shop/images/logo.png' %}" alt="New Earth Tech Logo" class="h-16 w-auto drop-shadow-md" />
+            <div>
+              <h1 class="text-xl font-bold text-gray-800">New Earth Tech</h1>
+              <p class="text-xs text-teal-600">University Marketplace</p>
+            </div>
+          </a>
+        </div>
+        <!-- Hamburger Menu Button -->
+        <button id="menuBtn" class="flex-shrink-0 rounded-md p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <!-- Search Bar (Center) - Hidden on Mobile -->
+        <div class="hidden max-w-2xl flex-1 md:flex">
+          <form action="{% url 'product_list' %}" method="get" class="flex w-full">
+            <input type="text" name="q" placeholder="Search products..." class="min-w-0 flex-1 rounded-l-lg border-2 border-r-0 border-teal-500 bg-white px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500" />
+            <button type="submit" class="flex-shrink-0 rounded-r-lg bg-teal-600 px-8 py-3 font-semibold text-white transition hover:bg-teal-700">Search</button>
+          </form>
+        </div>
+        <!-- Nav links (Right) - Hidden on Mobile -->
+        <nav class="hidden flex-shrink-0 gap-4 whitespace-nowrap items-center text-gray-700 lg:flex">
+          <a href="{% url 'homepage' %}" class="font-medium transition hover:text-teal-600">Home</a>
+          <a href="{% url 'product_list' %}" class="font-medium transition hover:text-teal-600">Products</a>
+          <a href="{% url 'cart' %}" class="font-medium transition hover:text-teal-600">Cart</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'messages_inbox' %}" class="flex items-center gap-2 font-medium transition hover:text-teal-600">
+          Messages {% if user.is_authenticated %} {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %} {% if unread_count > 0 %}
+          <span class="rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"> {{ unread_count }} </span>
+          {% endif %} {% endwith %} {% endif %}
+          </a>
+          <a href="{% url 'profile' %}" class="font-medium transition hover:text-teal-600">Profile</a>
+          <a href="{% url 'logout' %}" class="font-medium transition hover:text-teal-600">Logout</a>
+          {% else %}
+          <a href="{% url 'login' %}" class="font-medium transition hover:text-teal-600">Login</a>
+          <a href="{% url 'register' %}" class="font-medium transition hover:text-teal-600">Register</a>
+          {% endif %}
+        </nav>
       </div>
-      
-      <!-- Hamburger Menu Button -->
-      <button id="menuBtn" class="lg:hidden flex-shrink-0 p-2 hover:bg-red-700 rounded-md transition">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
-
-      <!-- Search Bar (Center) - Hidden on Mobile -->
-      <div class="hidden md:flex flex-1 max-w-2xl">
+      <!-- Mobile Search Bar -->
+      <div class="px-4 pb-3 md:hidden">
         <form action="{% url 'product_list' %}" method="get" class="flex w-full">
-          <input type="text" name="q" placeholder="Search products..."
-               class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
-          <button type="submit"
-              class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500 flex-shrink-0">
-            Go
-          </button>
+          <input type="text" name="q" placeholder="Search products..." class="min-w-0 flex-1 rounded-l-lg border-2 border-r-0 border-teal-500 px-4 py-3 text-gray-800 focus:outline-none" />
+          <button type="submit" class="rounded-r-lg bg-teal-600 px-6 py-3 font-semibold text-white hover:bg-teal-700">Go</button>
         </form>
       </div>
-
-      <!-- Nav links (Right) - Hidden on Mobile -->
-      <nav class="hidden lg:flex gap-6 whitespace-nowrap flex-shrink-0">
-        <a href="{% url 'homepage' %}" class="hover:text-gray-300">Home</a>
-        <a href="{% url 'product_list' %}" class="hover:text-gray-300">Products</a>
-        <a href="{% url 'cart' %}" class="hover:text-gray-300">Cart</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a>
-          <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
-        {% else %}
-          <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
-          <a href="{% url 'register' %}" class="hover:text-gray-300">Register</a>
-        {% endif %}
-      </nav>
-    </div>
-
-    <!-- Mobile Search Bar -->
-    <div class="md:hidden px-4 pb-3">
-      <form action="{% url 'product_list' %}" method="get" class="flex w-full">
-        <input type="text" name="q" placeholder="Search products..."
-             class="flex-1 min-w-0 px-4 py-3 rounded-l-md text-black focus:outline-none">
-        <button type="submit"
-            class="px-6 py-3 bg-red-400 text-black rounded-r-md hover:bg-yellow-500">
-          Go
-        </button>
-      </form>
-    </div>
-
-    <!-- Mobile Menu -->
-    <nav id="mobileMenu" class="hidden md:hidden bg-red-700 border-t border-red-500">
-      <div class="max-w-7xl mx-auto px-4 py-2 space-y-1">
-        <a href="{% url 'homepage' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Home</a>
-        <a href="{% url 'product_list' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Products</a>
-        <a href="{% url 'cart' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Cart</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Profile</a>
-          <a href="{% url 'logout' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Logout</a>
-        {% else %}
-          <a href="{% url 'login' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Login</a>
-          <a href="{% url 'register' %}" class="block px-4 py-3 rounded-md hover:bg-red-600 transition">Register</a>
-        {% endif %}
-      </div>
-    </nav>
-  </header>
+      <!-- Mobile Menu -->
+      <nav id="mobileMenu" class="hidden border-t border-gray-200 bg-white md:hidden">
+          <div class="mx-auto max-w-7xl space-y-1 px-4 py-2">
+            <a href="{% url 'homepage' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Home</a>
+            <a href="{% url 'product_list' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Products</a>
+            <a href="{% url 'cart' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Cart</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'messages_inbox' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">
+              Messages {% if user.is_authenticated %} {% with unread_count=user.received_messages.all|dictsort:"is_read"|length %} {% if unread_count > 0 %}
+              <span class="ml-2 inline-block rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"> {{ unread_count }} </span>
+              {% endif %} {% endwith %} {% endif %}</a>
+            <a href="{% url 'profile' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Profile</a>
+            <a href="{% url 'logout' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Login</a>
+            <a href="{% url 'register' %}" class="block rounded-lg px-4 py-3 text-gray-700 transition hover:bg-teal-50 hover:text-teal-600">Register</a>
+            {% endif %}
+          </div>
+        </nav>
+    </header>
 
   <main class="bg-gray-50 py-12">
     <div class="max-w-7xl mx-auto px-4">
@@ -90,13 +89,13 @@
             <h3 class="text-xl font-bold text-gray-900 mb-4">Categories</h3>
             <ul class="space-y-2">
               <li>
-                <a href="{% url 'product_list' %}" class="{% if not request.GET.category %}text-red-600 font-bold bg-red-50 px-2 py-1 rounded{% else %}text-gray-600 hover:text-red-600 transition{% endif %}">
+                <a href="{% url 'product_list' %}" class="{% if not request.GET.category %}text-teal-600 font-bold bg-teal-50 px-2 py-1 rounded{% else %}text-gray-600 hover:text-teal-600 transition{% endif %}">
                   All Products
                 </a>
               </li>
               {% for c in categories %}
                 <li>
-                  <a href="?category={{ c.slug }}" class="{% if request.GET.category == c.slug %}text-red-600 font-bold bg-red-50 px-2 py-1 rounded{% else %}text-gray-600 hover:text-red-600 transition{% endif %}">
+                  <a href="?category={{ c.slug }}" class="{% if request.GET.category == c.slug %}text-teal-600 font-bold bg-teal-50 px-2 py-1 rounded{% else %}text-gray-600 hover:text-teal-600 transition{% endif %}">
                     {{ c.icon }} {{ c.name }}
                   </a>
                 </li>
@@ -120,55 +119,58 @@
           <!-- Products Grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for p in products %}
-                     <div class="overflow-hidden rounded-lg bg-white shadow-md transition-shadow hover:shadow-lg flex flex-col h-full">
-            
-            <a href="{% url 'product_detail' p.id %}" 
-               class="relative block w-full overflow-hidden bg-gray-200 flex-shrink-0 aspect-square">
-                {% if p.image %}
-                <img src="{{ p.image.url }}" alt="{{ p.name }}" class="h-full w-full object-cover transition-transform hover:scale-105" />
-                {% else %}
-                <img src="{% static 'shop/images/placeholder.png' %}" alt="No image available" class="h-full w-full object-cover" />
-                {% endif %}
-            </a>
-            
-            <div class="p-4 flex flex-col flex-grow">
-                
-                <a href="{% url 'product_detail' p.id %}" class="block transition hover:text-red-600">
-                  <h3 class="mb-2 text-lg font-semibold text-gray-900 line-clamp-2 leading-snug
-    h-[3rem]">
-                      {{ p.name }}
-                  </h3>
-                </a>
+            <div class="group overflow-hidden rounded-xl bg-white shadow-md transition-all hover:shadow-2xl flex flex-col h-full">
+                  
+                  <a href="{% url 'product_detail' p.id %}" 
+                    class="relative block w-full overflow-hidden bg-gray-200 flex-shrink-0 aspect-square">
+                      {% if p.image %}
+                      <img src="{{ p.image.url }}" alt="{{ p.name }}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      {% else %}
+                      <img src="{% static 'shop/images/placeholder.png' %}" alt="No image available" class="h-full w-full object-cover" />
+                      {% endif %}
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                  </a>
+                  
+                  <div class="p-4 flex flex-col flex-grow">
+                      <a href="{% url 'product_detail' p.id %}" class="block transition hover:text-teal-600">
+                        <h3 class="mb-2 text-base font-semibold text-gray-900 line-clamp-2 leading-snug h-[3rem]">
+                            {{ p.name }}
+                        </h3>
+                      </a>
 
-                <div class="mb-4">
-                    <p class="text-xl font-bold text-red-600">₱{{ p.price }}</p>
-                    <p class="text-sm text-gray-600">Stock: <span class="font-medium">{{ p.stock }}</span></p> 
-                </div>
-                
-                <div class="flex-grow"></div> 
+                      <div class="mb-4">
+                          <p class="text-2xl font-bold text-teal-600">₱{{ p.price }}</p>
+                          <p class="text-sm text-gray-500">
+                            <span class="{% if p.stock > 5 %}text-green-600{% elif p.stock > 0 %}text-orange-600{% else %}text-teal-600{% endif %} font-medium">
+                              {% if p.stock > 5 %}In Stock{% elif p.stock > 0 %}Low Stock{% else %}Out of Stock{% endif %}
+                            </span>
+                            ({{ p.stock }})
+                          </p> 
+                      </div>
+                      
+                      <div class="flex-grow"></div> 
 
-                <div class="flex gap-2 mt-0"> 
-                    
-                    <a href="{% url 'product_detail' p.id %}" 
-                       class="flex-1 w-full rounded-md bg-red-600 py-2 text-center font-medium text-white transition-colors hover:bg-blue-700"> 
-                    View Details 
-                    </a>
-                    
-                    <form method="post" action="{% url 'add_to_cart' p.id %}" class="flex-1">
-                        {% csrf_token %}
-                        <button type="submit" 
-                          class="w-full rounded-md bg-red-600 py-2 text-center font-medium text-white transition-colors hover:bg-red-700">
-                        Add to Cart
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+                      <div class="flex gap-2 mt-0"> 
+                          <a href="{% url 'product_detail' p.id %}" 
+                            class="flex-1 w-full rounded-lg border-2 border-teal-600 py-2 text-center font-medium text-teal-600 transition-colors hover:bg-teal-50"> 
+                          Details 
+                          </a>
+                          
+                          <form method="post" action="{% url 'add_to_cart' p.id %}" class="flex-1">
+                              {% csrf_token %}
+                              <button type="submit" 
+                                class="w-full rounded-lg bg-teal-600 py-2 text-center font-medium text-white transition-all hover:bg-teal-700 hover:shadow-lg">
+                              Add to Cart
+                              </button>
+                          </form>
+                      </div>
+                  </div>
+              </div>
             
             {% empty %}
               <div class="col-span-full text-center py-12">
                 <p class="text-gray-600 text-lg">No products found.</p>
-                <a href="{% url 'product_list' %}" class="text-red-600 hover:text-red-700 font-medium mt-4 inline-block">View all products</a>
+                <a href="{% url 'product_list' %}" class="text-teal-600 hover:text-teal-700 font-medium mt-4 inline-block">View all products</a>
               </div>
             {% endfor %}
           </div>
@@ -177,51 +179,55 @@
     </div>
   </main>
 
-  <footer class="bg-red-700 text-gray-100 py-12 mt-12">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-        <!-- About -->
-        <div>
-          <h3 class="text-white font-bold text-lg mb-4">About Us</h3>
-          <p class="text-sm text-gray-200">TUP Marketplace is your go-to platform for buying and selling quality products on campus.</p>
-        </div>
-
-        <!-- Quick Links -->
-        <div>
-          <h3 class="text-white font-bold text-lg mb-4">Quick Links</h3>
-          <ul class="space-y-2 text-sm">
-            <li><a href="{% url 'homepage' %}" class="text-gray-200 hover:text-yellow-300 transition">Home</a></li>
-            <li><a href="{% url 'product_list' %}" class="text-gray-200 hover:text-yellow-300 transition">Shop</a></li>
-            <li><a href="{% url 'cart' %}" class="text-gray-200 hover:text-yellow-300 transition">Cart</a></li>
-          </ul>
-        </div>
-
-        <!-- Customer Service -->
-        <div>
-          <h3 class="text-white font-bold text-lg mb-4">Support</h3>
-          <ul class="space-y-2 text-sm">
-            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Contact Us</a></li>
-            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">FAQ</a></li>
-            <li><a href="#" class="text-gray-200 hover:text-yellow-300 transition">Shipping Info</a></li>
-          </ul>
-        </div>
-
-        <!-- Follow Us -->
-        <div>
-          <h3 class="text-white font-bold text-lg mb-4">Follow Us</h3>
-          <div class="flex space-x-4">
-            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Facebook</a>
-            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Twitter</a>
-            <a href="#" class="text-gray-200 hover:text-yellow-300 transition">Instagram</a>
+  <footer class="mt-0 bg-gray-900 py-12 text-gray-300">
+      <div class="mx-auto max-w-7xl px-4">
+        <div class="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- About -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">About Us</h3>
+            <p class="text-sm text-gray-400">New Earth Tech is your go-to platform for buying and selling quality products on campus.</p>
+          </div>
+          <!-- Quick Links -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Quick Links</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="{% url 'homepage' %}" class="text-gray-400 transition hover:text-teal-400">Home</a></li>
+              <li><a href="{% url 'product_list' %}" class="text-gray-400 transition hover:text-teal-400">Shop</a></li>
+              <li><a href="{% url 'cart' %}" class="text-gray-400 transition hover:text-teal-400">Cart</a></li>
+            </ul>
+          </div>
+          <!-- Customer Service -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Support</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Contact Us</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">FAQ</a></li>
+              <li><a href="#" class="text-gray-400 transition hover:text-teal-400">Shipping Info</a></li>
+            </ul>
+          </div>
+          <!-- Follow Us -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Follow Us</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+               Facebook
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+                Tiktok
+              </a>
+              <a href="#" class="text-gray-400 transition hover:text-teal-400">
+              Instagram</span>
+              </a>
+            </div>
           </div>
         </div>
+        <!-- Divider -->
+        <div class="border-t border-gray-800 pt-8">
+          <p class="text-center text-sm text-gray-400">© 2025 New Earth Tech. All rights reserved.</p>
+        </div>
       </div>
-
-      <!-- Divider -->
-      <div class="border-t border-red-600 pt-8">
-        <p class="text-center text-gray-200 text-sm">© 2025 TUP Marketplace. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
+    </footer>
 </body>
+
+<script src="{% static 'shop/js/menu.js' %}"></script>
 </html>

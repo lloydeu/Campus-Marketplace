@@ -87,6 +87,10 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.quantity} × {self.product.name}"
     
+from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 class Profile(models.Model):
     GENDER_CHOICES = [
         ('M', 'Male'),
@@ -117,6 +121,7 @@ class Profile(models.Model):
     is_seller = models.BooleanField(default=False, help_text="Is this user a seller?")
     shop_name = models.CharField(max_length=200, blank=True, help_text="Shop name (if seller)")
     shop_description = models.TextField(blank=True, help_text="Shop description (if seller)")
+    shop_logo = models.ImageField(upload_to='shop_logos/', blank=True, null=True, help_text="Shop logo (if seller)")
     seller_rating = models.DecimalField(
         max_digits=3, 
         decimal_places=2, 
@@ -124,7 +129,16 @@ class Profile(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(5)],
         help_text="Average seller rating (0-5)"
     )
-
+    shop_phone_number = models.CharField(max_length=20, blank=True, null=True, help_text="Shop contact phone number")
+    shop_alternate_phone = models.CharField(max_length=20, blank=True, null=True, help_text="Shop alternate contact phone number")
+    
+    # Shop location fields 
+    shop_address = models.TextField(blank=True, help_text="Shop street address")
+    shop_city = models.CharField(max_length=100, blank=True, help_text="Shop city")
+    shop_province = models.CharField(max_length=100, blank=True, help_text="Shop province/state")
+    shop_postal_code = models.CharField(max_length=20, blank=True, help_text="Shop postal code")
+    shop_country = models.CharField(max_length=100, default='Philippines', help_text="Shop country")
+    
     total_sales = models.PositiveIntegerField(default=0, help_text="Total number of sales")
     
     # Account Settings
@@ -135,15 +149,14 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     last_login = models.DateTimeField(blank=True, null=True)
-
+    
     def __str__(self):
         return f"{self.user.username}'s profile"
-
+    
     class Meta:
         verbose_name = 'User Profile'
         verbose_name_plural = 'User Profiles'
         ordering = ['-created_at']
-
 
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
